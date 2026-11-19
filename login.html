@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ky">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Кирүү — ИМРАН</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="img/logo-light.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="lockup" href="index.html"><img src="img/logo-light.webp" alt=""><span class="wm"><b>ИМРАН</b><small>компьютердик сабаттуулук</small></span></a>
+  <nav class="nav"><a href="index.html">Башкы бет</a></nav>
+</div></header>
+
+<main class="auth"><div class="card">
+  <div id="demo"></div>
+  <div class="tabs">
+    <button id="t-login" class="on" type="button">Кирүү</button>
+    <button id="t-reg" type="button">Катталуу</button>
+  </div>
+
+  <form id="f-login">
+    <h2 style="font-size:24px">Жеке кабинетке кирүү</h2>
+    <label for="le">Электрондук почта</label>
+    <input id="le" type="email" required autocomplete="email">
+    <label for="lp">Сырсөз</label>
+    <input id="lp" type="password" required autocomplete="current-password">
+    <div class="form-actions"><button class="btn" type="submit">Кирүү</button></div>
+  </form>
+
+  <form id="f-reg" hidden>
+    <h2 style="font-size:24px">Курска өтүнмө</h2>
+    <div class="msg info" style="margin:0 0 6px">Курстун баасы <b>5 000 сом</b>. Төлөмдү <a href="index.html#tolom">QR код же телефон номери</a> аркылуу жасап, чекти WhatsApp'ка жөнөтүңүз. Окутуучу текшергенден кийин кабинетиңиз ачылат.</div>
+    <label for="rn">Аты-жөнүңүз</label>
+    <input id="rn" required autocomplete="name">
+    <label for="rph">Телефон (WhatsApp)</label>
+    <input id="rph" type="tel" required placeholder="+996 ___ ___ ___" autocomplete="tel">
+    <label for="rg">Сиз кимсиз?</label>
+    <select id="rg" required>
+      <option value="">Тандаңыз…</option>
+      <option value="gov">Мамлекеттик кызматчы</option>
+      <option value="teacher">Мугалим</option>
+      <option value="student">Студент</option>
+      <option value="other">Башка</option>
+    </select>
+    <label for="re">Электрондук почта</label>
+    <input id="re" type="email" required autocomplete="email">
+    <label for="rp">Сырсөз ойлоп табыңыз (кеминде 6 белги)</label>
+    <input id="rp" type="password" required minlength="6" autocomplete="new-password">
+    <div class="form-actions"><button class="btn" type="submit">Өтүнмө жөнөтүү</button></div>
+  </form>
+
+  <div id="msg"></div>
+</div></main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/brand.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const show = (html, cls) => $("msg").innerHTML = html ? `<div class="msg ${cls}">${html}</div>` : "";
+  function tab(reg){
+    $("t-login").classList.toggle("on", !reg); $("t-reg").classList.toggle("on", reg);
+    $("f-login").hidden = reg; $("f-reg").hidden = !reg; show("");
+  }
+  $("t-login").onclick = () => tab(false);
+  $("t-reg").onclick = () => tab(true);
+  if (location.hash === "#register") tab(true);
+
+  if (API.mode === "demo") $("demo").innerHTML =
+    `<div class="demo-note"><b>Демо режим.</b> Маалымат ушул браузерде гана сакталат.<br>
+     Окутуучу катары кирүү: <b>admin@demo.kg</b> / <b>admin123</b></div>`;
+
+  const home = u => u.role === "admin" ? "admin.html" : "cabinet.html";
+  API.me().then(u => { if (u) location.href = home(u); });
+
+  $("f-login").onsubmit = async e => {
+    e.preventDefault(); const b = e.submitter; b.disabled = true;
+    try { await API.signIn($("le").value.trim(), $("lp").value); location.href = home(await API.me()); }
+    catch (err) { show(K.esc(err.message), "err"); b.disabled = false; }
+  };
+  $("f-reg").onsubmit = async e => {
+    e.preventDefault(); const b = e.submitter; b.disabled = true;
+    try {
+      await API.signUp({ email: $("re").value.trim(), password: $("rp").value,
+        full_name: $("rn").value.trim(), phone: $("rph").value.trim(), grp: $("rg").value });
+      $("f-reg").reset(); tab(false);
+      show(API.mode === "live"
+        ? "Өтүнмөңүз кабыл алынды! Почтаңызга келген катты ачып ырастаңыз. Окутуучу бекиткенден кийин кире аласыз."
+        : "Өтүнмөңүз кабыл алынды! Окутуучу бекиткенден кийин кире аласыз.", "ok");
+    } catch (err) { show(K.esc(err.message), "err"); }
+    b.disabled = false;
+  };
+</script>
+</body>
+</html>

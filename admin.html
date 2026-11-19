@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ky">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Башкаруу — ИМРАН</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="img/logo-light.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="lockup" href="index.html"><img src="img/logo-light.webp" alt=""><span class="wm"><b>ИМРАН</b><small>компьютердик сабаттуулук</small></span></a>
+  <nav class="nav">
+    <a href="index.html" target="_blank">Сайтты көрүү</a>
+    <a href="cabinet.html">Окуучунун көрүнүшү</a>
+    <button class="btn ghost sm" id="out" type="button">Чыгуу</button>
+  </nav>
+</div></header>
+
+<main class="app"><div class="wrap" id="root"><div class="empty">Жүктөлүүдө…</div></div></main>
+
+<template id="tpl">
+  <div class="app-head"><div><h1 style="font-size:32px">Окутуучунун панели</h1><span class="muted" id="stats"></span></div></div>
+  <div class="tabs">
+    <button class="on" data-p="p-users" type="button">Өтүнмөлөр <span id="cnt"></span></button>
+    <button data-p="p-lessons" type="button">Сабактар</button>
+    <button data-p="p-hw" type="button">Тапшырмалар</button>
+  </div>
+  <div class="panel on" id="p-users">
+    <div class="row" style="margin-bottom:14px">
+      <select id="flt" style="max-width:220px">
+        <option value="pending">Күтүүдөгүлөр</option><option value="approved">Бекитилгендер</option>
+        <option value="rejected">Четке кагылгандар</option><option value="all">Баары</option>
+      </select>
+    </div>
+    <div id="users"></div>
+  </div>
+  <div class="panel" id="p-lessons">
+    <div class="row" style="margin-bottom:14px"><button class="btn sm" id="add" type="button">+ Жаңы сабак</button></div>
+    <div id="edit"></div>
+    <div id="lessons"></div>
+  </div>
+  <div class="panel" id="p-hw"><div id="hw"></div></div>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/brand.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const { esc, fmtDate, safeUrl, GROUPS, STATUS } = K;
+$("out").onclick = async () => { await API.signOut(); location.href = "login.html"; };
+
+const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
+
+(async () => {
+  const me = await API.me();
+  if (!me) { location.href = "login.html"; return; }
+  if (me.role !== "admin") { location.href = "cabinet.html"; return; }
+  $("root").innerHTML = $("tpl").innerHTML;
+  document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+    document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+    document.querySelectorAll(".panel").forEach(p => p.classList.toggle("on", p.id === b.dataset.p));
+  });
+
+  let lessons = [];
+
+  async function renderUsers() {
+    const all = (await API.listProfiles()).filter(u => u.role !== "admin");
+    const pend = all.filter(u => u.status === "pending").length;
+    $("cnt").innerHTML = pend ? `<span class="badge wait">${pend}</span>` : "";
+    $("stats").textContent = `Бекитилген окуучулар: ${all.filter(u => u.status === "approved").length} · Күтүүдө: ${pend}`;
+    const f = $("flt").value;
+    const list = f === "all" ? all : all.filter(u => u.status === f);
+    $("users").innerHTML = list.length ? `<div class="table-wrap"><table>
+      <tr><th>Аты-жөнү</th><th>Байланыш</th><th>Тобу</th><th>Статус</th><th></th></tr>
+      ${list.map(u => `<tr><td><b>${esc(u.full_name)}</b><div class="muted small">${fmtDate(u.created_at)}</div></td>
+        <td>${esc(u.phone)}<div class="muted small">${esc(u.email || "")}</div></td>
+        <td>${esc(GROUPS[u.grp] || "")}</td>
+        <td><span class="badge ${u.status === "approved" ? "ok" : u.status === "rejected" ? "bad" : "wait"}">${STATUS[u.status] || u.status}</span></td>
+        <td><div class="row">
+          ${u.status !== "approved" ? `<button class="btn ok sm" data-a="approved" data-id="${esc(u.id)}" type="button">Бекитүү</button>` : ""}
+          ${u.status !== "rejected" ? `<button class="btn ghost sm" data-a="rejected" data-id="${esc(u.id)}" type="button">${u.status === "approved" ? "Жабуу" : "Четке кагуу"}</button>` : ""}
+        </div></td></tr>`).join("")}</table></div>`
+      : `<div class="empty">Бул тизмеде эч ким жок.</div>`;
+    $("users").querySelectorAll("button[data-a]").forEach(b => b.onclick = async () => {
+      b.disabled = true; await API.setStatus(b.dataset.id, b.dataset.a); renderUsers();
+    });
+  }
+  $("flt").onchange = renderUsers;
+
+  async function renderLessons() {
+    lessons = await API.listLessons();
+    $("lessons").innerHTML = lessons.length ? `<div class="table-wrap"><table>
+      <tr><th>№</th><th>Тема</th><th>Күнү</th><th>Zoom</th><th>Жазуу</th><th></th></tr>
+      ${lessons.map(l => `<tr><td>${l.n}</td><td><b>${esc(l.title)}</b></td><td>${fmtDate(l.starts_at)}</td>
+        <td>${safeUrl(l.zoom_url) ? "✓" : "—"}</td><td>${safeUrl(l.video_url) ? "✓" : "—"}</td>
+        <td><button class="btn ghost sm" data-e="${esc(l.id)}" type="button">Түзөтүү</button></td></tr>`).join("")}</table></div>`
+      : `<div class="empty">Сабактар жок.</div>`;
+    $("lessons").querySelectorAll("[data-e]").forEach(b => b.onclick = () => editor(lessons.find(l => l.id === b.dataset.e)));
+  }
+
+  function editor(l) {
+    l = l || { n: (lessons.at(-1)?.n || 0) + 1, title: "", description: "", starts_at: "", zoom_url: "", video_url: "", materials_url: "", homework: "" };
+    $("edit").innerHTML = `<form class="card" id="lf" style="margin-bottom:18px">
+      <h3>${l.id ? "Сабакты түзөтүү" : "Жаңы сабак"}</h3>
+      <div class="grid2">
+        <div><label>Номери</label><input name="n" type="number" min="1" value="${l.n}" required></div>
+        <div><label>Күнү жана сааты</label><input name="starts_at" type="datetime-local" value="${toLocal(l.starts_at)}"></div>
+      </div>
+      <label>Темасы</label><input name="title" value="${esc(l.title)}" required>
+      <label>Кыскача мазмуну</label><input name="description" value="${esc(l.description)}">
+      <label>Zoom / Google Meet шилтемеси</label><input name="zoom_url" type="url" value="${esc(l.zoom_url)}" placeholder="https://zoom.us/j/…">
+      <label>Сабактын жазуусу (YouTube шилтемеси, жеке/unlisted)</label><input name="video_url" type="url" value="${esc(l.video_url)}" placeholder="https://youtu.be/…">
+      <label>Материалдар (Google Drive папкасы ж.б.)</label><input name="materials_url" type="url" value="${esc(l.materials_url)}">
+      <label>Үй тапшырмасы</label><textarea name="homework">${esc(l.homework)}</textarea>
+      <div class="row" style="margin-top:16px">
+        <button class="btn" type="submit">Сактоо</button>
+        <button class="btn ghost" type="button" id="cancel">Жокко чыгаруу</button>
+        ${l.id ? `<button class="btn bad" type="button" id="del" style="margin-left:auto">Өчүрүү</button>` : ""}
+      </div></form>`;
+    $("edit").scrollIntoView({ behavior: "smooth", block: "start" });
+    const f = $("lf");
+    $("cancel").onclick = () => $("edit").innerHTML = "";
+    if ($("del")) $("del").onclick = async () => {
+      if (!confirm("Бул сабакты өчүрөсүзбү?")) return;
+      await API.deleteLesson(l.id); $("edit").innerHTML = ""; renderLessons();
+    };
+    f.onsubmit = async e => {
+      e.preventDefault();
+      const d = Object.fromEntries(new FormData(f));
+      const row = { ...(l.id ? { id: l.id } : {}), n: +d.n, title: d.title, description: d.description,
+        starts_at: d.starts_at ? new Date(d.starts_at).toISOString() : null,
+        zoom_url: d.zoom_url, video_url: d.video_url, materials_url: d.materials_url, homework: d.homework };
+      try { await API.saveLesson(row); $("edit").innerHTML = ""; renderLessons(); }
+      catch (err) { alert(err.message); }
+    };
+  }
+  $("add").onclick = () => editor();
+
+  async function renderHw() {
+    const list = await API.allSubmissions();
+    const byId = Object.fromEntries(lessons.map(l => [l.id, l]));
+    $("hw").innerHTML = list.length ? `<div class="table-wrap"><table>
+      <tr><th>Окуучу</th><th>Сабак</th><th>Жооп</th><th>Баа жана пикир</th></tr>
+      ${list.map(s => `<tr><td><b>${esc(s.full_name)}</b><div class="muted small">${fmtDate(s.created_at)}</div></td>
+        <td>${byId[s.lesson_id] ? byId[s.lesson_id].n + ". " + esc(byId[s.lesson_id].title) : ""}</td>
+        <td>${esc(s.text)}${safeUrl(s.link) ? `<br><a href="${esc(s.link)}" target="_blank" rel="noopener">Файл</a>` : ""}</td>
+        <td><form class="gr" data-id="${esc(s.id)}">
+          <input name="g" value="${esc(s.grade)}" placeholder="Баа (мис. 5 же «Кабыл алынды»)">
+          <div class="gap" style="height:6px"></div>
+          <input name="c" value="${esc(s.comment)}" placeholder="Пикир">
+          <div class="gap" style="height:6px"></div><button class="btn sm" type="submit">Сактоо</button></form></td></tr>`).join("")}</table></div>`
+      : `<div class="empty">Тапшырмалар азырынча келе элек.</div>`;
+    $("hw").querySelectorAll("form.gr").forEach(f => f.onsubmit = async e => {
+      e.preventDefault(); e.submitter.textContent = "…";
+      await API.gradeSubmission(f.dataset.id, f.g.value.trim(), f.c.value.trim()); e.submitter.textContent = "✓ Сакталды";
+    });
+  }
+
+  await Promise.all([renderUsers(), renderLessons()]);
+  renderHw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ky">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Жеке кабинет — ИМРАН</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="img/logo-light.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="lockup" href="index.html"><img src="img/logo-light.webp" alt=""><span class="wm"><b>ИМРАН</b><small>компьютердик сабаттуулук</small></span></a>
+  <nav class="nav">
+    <a id="to-admin" href="admin.html" hidden>Башкаруу</a>
+    <button class="btn ghost sm" id="out" type="button">Чыгуу</button>
+  </nav>
+</div></header>
+
+<main class="app"><div class="wrap" id="root"><div class="empty">Жүктөлүүдө…</div></div></main>
+
+<template id="tpl-app">
+  <div class="app-head">
+    <div><h1 style="font-size:32px" id="hello"></h1><span class="muted" id="who"></span></div>
+  </div>
+  <div id="next"></div>
+  <div class="tabs">
+    <button class="on" data-p="p-lessons" type="button">Сабактар</button>
+    <button data-p="p-hw" type="button">Тапшырмаларым</button>
+    <button data-p="p-ai" type="button">AI жардамчы</button>
+    <button data-p="p-safe" type="button">Коопсуздук</button>
+  </div>
+  <div class="panel on" id="p-lessons"></div>
+  <div class="panel" id="p-hw"></div>
+  <div class="panel" id="p-ai"></div>
+  <div class="panel" id="p-safe"></div>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/brand.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const { esc, fmtDate, safeUrl, ytEmbed, GROUPS } = K;
+$("out").onclick = async () => { await API.signOut(); location.href = "login.html"; };
+
+const PROMPTS = {
+  gov: [
+    ["Расмий кат", "Сен мамлекеттик мекеменин тажрыйбалуу кызматкерисиң. [Кимге] [эмне жөнүндө] расмий кат жаз. Стили расмий, кыргыз тилинде, 1 беттен ашпасын. Аягына кол коюучу үчүн орун калтыр."],
+    ["Отчетту кыскартуу", "Төмөнкү отчеттун негизги 5 жыйынтыгын жана 3 сунушун тизме кылып жаз. Сандарды сактап кал:\n[текстти бул жерге коюңуз]"],
+    ["Excel формуласы", "Excel'де A тилкесинде аты-жөнү, B тилкесинде сумма бар. [Эмне эсептөө керек] үчүн формула жазып, аны кадам-кадам түшүндүр."],
+  ],
+  teacher: [
+    ["Сабак планы", "[Класс]-класстын [предмет] сабагына «[тема]» боюнча 45 мүнөттүк сабак планын түз: максаты, башталышы, негизги бөлүк, топтук иш, жыйынтык, үй тапшырмасы."],
+    ["Тест", "«[тема]» боюнча [класс]-класс үчүн 10 суроодон турган тест түз. Ар бир суроодо 4 жооп болсун. Аягында туура жоопторду өзүнчө бер."],
+    ["Презентация", "«[тема]» боюнча 8 слайддан турган презентациянын түзүмүн жаз: ар бир слайддын аталышы жана 3 кыска пункт."],
+  ],
+  student: [
+    ["Рефераттын планы", "«[тема]» боюнча реферат үчүн план түз: киришүү, 3 бөлүм, корутунду. Ар бир бөлүмгө эмне жазуу керек экенин 2 сүйлөм менен түшүндүр."],
+    ["Текстти түшүнүү", "Бул текстти жөнөкөй тил менен түшүндүр жана 5 негизги ойду бөлүп бер:\n[текстти бул жерге коюңуз]"],
+    ["Резюме", "Мен [адистик] боюнча окуйм, [тажрыйба/көндүмдөр]. [Кызмат орду] үчүн 1 беттик резюме түзүп бер."],
+  ],
+};
+PROMPTS.other = PROMPTS.gov;
+
+function gate(icon, title, text) {
+  $("root").innerHTML = `<div class="gate card"><div class="ico">${icon}</div><h2>${title}</h2><p class="muted">${text}</p>
+    <a class="btn ghost" href="index.html">Башкы бетке</a></div>`;
+}
+
+(async () => {
+  const me = await API.me();
+  if (!me) { location.href = "login.html"; return; }
+  if (me.role === "admin") $("to-admin").hidden = false;
+  if (me.status === "pending" && me.role !== "admin")
+    return gate("⏳", "Өтүнмөңүз каралууда", "Окутуучу өтүнмөңүздү бекиткенден кийин сабактар ушул жерде ачылат. Адатта бул 1 күнгө чейин созулат.");
+  if (me.status === "rejected" && me.role !== "admin")
+    return gate("🚫", "Кирүүгө уруксат жок", "Өтүнмөңүз четке кагылды. Суроолоруңуз болсо, окутуучу менен байланышыңыз.");
+
+  $("root").innerHTML = $("tpl-app").innerHTML;
+  $("hello").textContent = "Кош келиңиз, " + (me.full_name || "окуучу").split(" ")[0] + "!";
+  $("who").textContent = GROUPS[me.grp] || "";
+  document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+    document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+    document.querySelectorAll(".panel").forEach(p => p.classList.toggle("on", p.id === b.dataset.p));
+  });
+
+  const [lessons, subs] = await Promise.all([API.listLessons(), API.mySubmissions()]);
+  const now = Date.now();
+  const next = lessons.find(l => l.starts_at && new Date(l.starts_at).getTime() > now - 2 * 3600e3);
+  if (next) $("next").innerHTML = `<div class="next">
+      <div><div class="muted small">Кийинки түз эфир</div><h2 style="margin:4px 0">${next.n}. ${esc(next.title)}</h2>
+      <div class="muted">${fmtDate(next.starts_at)}</div></div>
+      ${safeUrl(next.zoom_url) ? `<a class="btn" href="${esc(next.zoom_url)}" target="_blank" rel="noopener">Сабакка кошулуу</a>` : `<span class="muted">Шилтеме кийин коюлат</span>`}
+    </div>`;
+
+  $("p-lessons").innerHTML = lessons.length ? lessons.map(l => {
+    const done = subs.some(s => s.lesson_id === l.id);
+    const yt = ytEmbed(l.video_url);
+    return `<details class="lesson"><summary>
+        <div class="num">${l.n}</div>
+        <div style="flex:1"><b>${esc(l.title)}</b><div class="meta">${fmtDate(l.starts_at)}</div></div>
+        ${l.video_url ? `<span class="badge ok">Жазуу бар</span>` : ``}
+        ${done ? `<span class="badge ok">Тапшырылды</span>` : ``}
+      </summary><div class="body">
+        <div class="gap"></div>
+        ${l.description ? `<p>${esc(l.description)}</p>` : ``}
+        <div class="row">
+          ${safeUrl(l.zoom_url) ? `<a class="btn sm" href="${esc(l.zoom_url)}" target="_blank" rel="noopener">Zoom'го кошулуу</a>` : ``}
+          ${safeUrl(l.materials_url) ? `<a class="btn ghost sm" href="${esc(l.materials_url)}" target="_blank" rel="noopener">Материалдар</a>` : ``}
+        </div>
+        ${yt ? `<div class="video"><iframe src="${yt}" allowfullscreen loading="lazy" title="Сабактын жазуусу"></iframe></div>`
+             : safeUrl(l.video_url) ? `<p><a href="${esc(l.video_url)}" target="_blank" rel="noopener">Сабактын жазуусун көрүү</a></p>` : `<p class="muted small" style="margin-top:12px">Сабактын жазуусу сабактан кийин коюлат.</p>`}
+        ${l.homework ? `<h3 style="margin-top:12px">Үй тапшырмасы</h3><p>${esc(l.homework)}</p>
+          <form class="hw" data-id="${esc(l.id)}">
+            <label>Жообуңуз</label><textarea name="t" placeholder="Кыскача жазыңыз…"></textarea>
+            <label>Файлдын шилтемеси (Google Drive ж.б.)</label><input name="u" type="url" placeholder="https://">
+            <div class="gap"></div><button class="btn sm" type="submit">Тапшыруу</button><span class="hw-msg small"></span>
+          </form>` : ``}
+      </div></details>`;
+  }).join("") : `<div class="empty">Сабактар азырынча кошула элек.</div>`;
+
+  document.querySelectorAll("form.hw").forEach(f => f.onsubmit = async e => {
+    e.preventDefault(); const t = f.t.value.trim(), u = f.u.value.trim();
+    if (!t && !u) return;
+    e.submitter.disabled = true;
+    try { await API.submitHomework(f.dataset.id, t, u); f.querySelector(".hw-msg").textContent = "  ✓ Тапшырылды"; f.reset(); renderHw(); }
+    catch (err) { f.querySelector(".hw-msg").textContent = "  " + err.message; }
+    e.submitter.disabled = false;
+  });
+
+  async function renderHw() {
+    const list = await API.mySubmissions();
+    const byId = Object.fromEntries(lessons.map(l => [l.id, l]));
+    $("p-hw").innerHTML = list.length ? `<div class="table-wrap"><table><tr><th>Сабак</th><th>Жооп</th><th>Баа</th><th>Окутуучунун пикири</th></tr>
+      ${list.map(s => `<tr><td>${byId[s.lesson_id] ? byId[s.lesson_id].n + ". " + esc(byId[s.lesson_id].title) : ""}</td>
+        <td>${esc(s.text)}${safeUrl(s.link) ? `<br><a href="${esc(s.link)}" target="_blank" rel="noopener">Файл</a>` : ""}</td>
+        <td>${s.grade ? `<span class="badge ok">${esc(s.grade)}</span>` : `<span class="badge wait">Текшерилүүдө</span>`}</td>
+        <td>${esc(s.comment)}</td></tr>`).join("")}</table></div>`
+      : `<div class="empty">Тапшырылган тапшырмалар азырынча жок.</div>`;
+  }
+  renderHw();
+
+  const pr = PROMPTS[me.grp] || PROMPTS.gov;
+  $("p-ai").innerHTML = `<div class="card" style="margin-bottom:16px">
+      <h3>ChatGPT менен иштөө</h3>
+      <p class="muted">Төмөнкү даяр суроолорду (промпттарды) көчүрүп, ChatGPT'ге коюңуз. [Кашаанын] ичиндегилерди өзүңүздүн маалыматыңыз менен алмаштырыңыз.</p>
+      <a class="btn" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT'ни ачуу</a>
+      <p class="small muted" style="margin-top:12px">⚠️ ChatGPT'ге паспорт номерин, ИНН, сырсөздү жана кызматтык жашыруун маалыматты жазбаңыз.</p>
+    </div>` + pr.map(p => `<div class="prompt"><b>${p[0]}</b><pre>${esc(p[1])}</pre>
+      <button class="btn ghost sm copy" type="button">Көчүрүү</button></div>`).join("");
+  document.querySelectorAll(".copy").forEach(b => b.onclick = async () => {
+    try { await navigator.clipboard.writeText(b.previousElementSibling.textContent); b.textContent = "✓ Көчүрүлдү"; }
+    catch (e) { b.textContent = "Колдон белгилеп көчүрүңүз"; }
+  });
+
+  $("p-safe").innerHTML = `<div class="cards">
+    <div class="card"><div class="ico">📞</div><h3>«Банктан чалып жатабыз»</h3><p class="muted small">Банк эч качан SMS-кодду, картанын артындагы 3 санды же сырсөздү сурабайт. Мындай чалуу болсо, дароо телефонду коюңуз да, банктын расмий номерине өзүңүз чалыңыз.</p></div>
+    <div class="card"><div class="ico">🔗</div><h3>Шектүү шилтемелер</h3><p class="muted small">«Сиз утуп алдыңыз», «аккаунтуңуз бөгөттөлөт» деген каттардагы шилтемелерди баспаңыз. Даректи кылдат текшериңиз: мисалы, «g00gle.com» деген дарек Google эмес.</p></div>
+    <div class="card"><div class="ico">🔐</div><h3>Сырсөз жана 2FA</h3><p class="muted small">Ар бир сайтка өзүнчө сырсөз коюңуз (кеминде 10 белги). WhatsApp, Gmail жана банк тиркемесинде эки баскычтуу текшерүүнү күйгүзүңүз.</p></div>
+    <div class="card"><div class="ico">💬</div><h3>WhatsApp'тагы «тууган»</h3><p class="muted small">Тааныш адамдын атынан акча сураса, ага өзүңүз чалып текшериңиз. Алдамчылар көп учурда бузулган аккаунттан жазышат.</p></div>
+    <div class="card"><div class="ico">📲</div><h3>Тиркемелер</h3><p class="muted small">Тиркемени Play Market же App Store'дон гана орнотуңуз. Чат аркылуу жөнөтүлгөн .apk файлдарын ачпаңыз.</p></div>
+    <div class="card"><div class="ico">🆘</div><h3>Алданып калсаңыз</h3><p class="muted small">Дароо банкка чалып, картаны бөгөттөңүз, сырсөздөрдү алмаштырыңыз жана милицияга (102) кайрылыңыз.</p></div>
+  </div>`;
+})();
+</script>
+</body>
+</html>
