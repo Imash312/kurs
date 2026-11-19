@@ -213,6 +213,10 @@
   <span>© <span id="y"></span> ИМРАН · <a href="login.html" style="color:#9A9A9A">Окутуучу үчүн кирүү</a></span>
 </div></footer>
 
+<script>
+  // Почтадагы ырастоо шилтемеси башкы бетке алып келсе, кирүү барагына өткөрөт
+  if (/access_token|error_description/.test(location.hash)) location.replace("login.html" + location.hash);
+</script>
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/brand.js"></script>

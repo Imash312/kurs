@@ -100,7 +100,7 @@
   const live = {
     client() { if (!sb) sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY); return sb; },
     async signUp({ email, password, full_name, phone, grp }) {
-      const { error } = await this.client().auth.signUp({ email, password, options: { data: { full_name, phone, grp } } });
+      const { error } = await this.client().auth.signUp({ email, password, options: { data: { full_name, phone, grp }, emailRedirectTo: new URL("login.html", location.href).href } });
       if (error) throw new Error(tr(error.message));
       await this.client().auth.signOut();
     },

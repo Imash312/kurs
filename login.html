@@ -77,6 +77,10 @@
      Окутуучу катары кирүү: <b>admin@demo.kg</b> / <b>admin123</b></div>`;
 
   const home = u => u.role === "admin" ? "admin.html" : "cabinet.html";
+  // Почтадагы шилтемеден келгенде
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get("error_description")) show("Шилтеме иштебей калды: " + K.esc(h.get("error_description")) + ". Почта жана сырсөз менен кирип көрүңүз.", "err");
+  else if (h.get("access_token")) show("Почтаңыз ырасталды! Кирип жатасыз…", "ok");
   API.me().then(u => { if (u) location.href = home(u); });
 
   $("f-login").onsubmit = async e => {
@@ -91,7 +95,7 @@
         full_name: $("rn").value.trim(), phone: $("rph").value.trim(), grp: $("rg").value });
       $("f-reg").reset(); tab(false);
       show(API.mode === "live"
-        ? "Өтүнмөңүз кабыл алынды! Почтаңызга келген катты ачып ырастаңыз. Окутуучу бекиткенден кийин кире аласыз."
+        ? "Өтүнмөңүз кабыл алынды! Почтаңызга келген каттагы шилтемени басып, каттоону ырастаңыз (кат келбесе «Спам» папкасын караңыз). Андан кийин окутуучу кабинетиңизди ачат."
         : "Өтүнмөңүз кабыл алынды! Окутуучу бекиткенден кийин кире аласыз.", "ok");
     } catch (err) { show(K.esc(err.message), "err"); }
     b.disabled = false;
