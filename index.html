@@ -9,6 +9,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  .wa-float{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;align-items:center;gap:10px;background:#25D366;color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:13px 18px 13px 14px;border-radius:999px;box-shadow:0 12px 28px -10px rgba(0,0,0,.45);transition:transform .15s}
+  .wa-float:hover{transform:translateY(-2px)}
+  .wa-float svg{width:26px;height:26px}
+  @media (max-width:520px){.wa-float span{display:none}.wa-float{padding:14px}}
+  .btn.wa{background:#25D366;color:#fff}
+  .btn.wa:hover{box-shadow:0 10px 24px -10px rgba(37,211,102,.8)}
+  .contact{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center;background:var(--black);color:#fff;border-radius:24px;padding:44px;position:relative;overflow:hidden}
+  .contact::after{content:"";position:absolute;left:-80px;bottom:-120px;width:320px;height:320px;background:radial-gradient(circle,rgba(244,149,35,.3),transparent 70%)}
+  .contact > *{position:relative;z-index:1}
+  .contact p{color:#CFCFCF;font-size:18px}
+  .contact .phone-big{font-family:var(--display);font-size:clamp(24px,3vw,34px);font-weight:800;color:#fff;text-decoration:none;display:block;margin-bottom:18px}
+  .contact .row .btn{flex:1 1 200px}
+  @media (max-width:760px){.contact{grid-template-columns:1fr;padding:28px}}
+</style>
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -19,6 +34,7 @@
     <a href="#natyiyja">Натыйжа</a>
     <a href="#baa">Баасы</a>
     <a href="#tolom">Төлөм</a>
+    <a href="#baylanysh">Байланыш</a>
     <a href="login.html">Кирүү</a>
     <a class="btn sm" href="#baa">Курска жазылуу</a>
   </nav>
@@ -35,6 +51,7 @@
     <p class="lead">6 жумада Word, Excel, PowerPoint, интернет жана <b>ChatGPT</b> менен иштөөнү үйрөнөсүз. Сабактар Zoom аркылуу <b>түз эфирде</b>, кыргыз тилинде өтөт, ар бирин кийин кайра көрө аласыз.</p>
     <div class="cta">
       <a class="btn lg" href="#baa">Курска жазылуу</a>
+      <a class="btn ghost lg wa-link" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.8 1.9 6.8L3 29l6.8-2.1c1.9 1 4 1.6 6.2 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.1c-2 0-3.9-.6-5.5-1.6l-.4-.2-4 1.2 1.3-3.9-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6 0-5.8 4.7-10.5 10.6-10.5s10.6 4.7 10.6 10.5S21.9 26.1 16 26.1zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.3 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg> Суроо берүү</a>
       <span class="price-note">Баасы: <b style="color:#fff">5 000 сом</b><br>толук курс үчүн</span>
     </div>
     <div class="chips">
@@ -188,6 +205,24 @@
   </div>
 </div></section>
 
+<!-- CONTACT -->
+<section id="baylanysh"><div class="wrap">
+  <div class="contact">
+    <div>
+      <span class="eyebrow" style="color:var(--orange)">Байланыш</span>
+      <h2>Суроолоруңуз барбы?</h2>
+      <p>Курс, баасы же сабактардын убактысы тууралуу WhatsApp'ка жазыңыз же чалыңыз. Төлөөдөн мурун бардык суроолоруңузга жооп беребиз.</p>
+    </div>
+    <div>
+      <a class="phone-big" id="call-num" href="tel:+996997161357">+996 997 161 357</a>
+      <div class="row">
+        <a class="btn wa lg wa-link" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.8 1.9 6.8L3 29l6.8-2.1c1.9 1 4 1.6 6.2 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.1c-2 0-3.9-.6-5.5-1.6l-.4-.2-4 1.2 1.3-3.9-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6 0-5.8 4.7-10.5 10.6-10.5s10.6 4.7 10.6 10.5S21.9 26.1 16 26.1zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.3 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg> WhatsApp'ка жазуу</a>
+        <a class="btn ghost lg" id="call-btn" href="tel:+996997161357" style="color:#fff">📞 Чалуу</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+
 <!-- FAQ -->
 <section><div class="wrap" style="max-width:860px">
   <div class="sec-head"><span class="eyebrow">Суроо-жооп</span><h2>Көп берилүүчү суроолор</h2></div>
@@ -202,9 +237,14 @@
 <section class="band"><div class="wrap">
   <h2>Компьютерди үйрөнүүнү кийинкиге калтырбаңыз</h2>
   <p>Орундар чектелүү: түз эфирде ар бир окуучуга убакыт бөлүнүшү үчүн топ чоң болбойт.</p>
-  <a class="btn dark lg" href="#tolom">Курска жазылуу · 5 000 сом</a>
+  <div class="row" style="justify-content:center">
+    <a class="btn dark lg" href="#tolom">Курска жазылуу · 5 000 сом</a>
+    <a class="btn ghost lg wa-link" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.8 1.9 6.8L3 29l6.8-2.1c1.9 1 4 1.6 6.2 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.1c-2 0-3.9-.6-5.5-1.6l-.4-.2-4 1.2 1.3-3.9-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6 0-5.8 4.7-10.5 10.6-10.5s10.6 4.7 10.6 10.5S21.9 26.1 16 26.1zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.3 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg> Адегенде суроо берүү</a>
+  </div>
 </div></section>
 </main>
+
+<a class="wa-float wa-link" href="#" target="_blank" rel="noopener" aria-label="WhatsApp аркылуу жазуу"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.8 1.9 6.8L3 29l6.8-2.1c1.9 1 4 1.6 6.2 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.1c-2 0-3.9-.6-5.5-1.6l-.4-.2-4 1.2 1.3-3.9-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6 0-5.8 4.7-10.5 10.6-10.5s10.6 4.7 10.6 10.5S21.9 26.1 16 26.1zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.3 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg><span>Суроо берүү</span></a>
 
 <footer><div class="wrap">
   <a class="lockup" href="index.html"><img src="img/logo-dark.webp" alt="">
@@ -242,6 +282,12 @@
   };
 
   const wa = C.WHATSAPP ? "https://wa.me/" + encodeURIComponent(C.WHATSAPP) : "";
+  const waAsk = wa ? wa + "?text=" + encodeURIComponent("Саламатсызбы! ИМРАН компьютердик сабаттуулук курсу боюнча суроом бар.") : "";
+  document.querySelectorAll(".wa-link").forEach(el => { if (waAsk) el.href = waAsk; else el.hidden = true; });
+  if (C.PAY_PHONE) {
+    const tel = "tel:" + C.PAY_PHONE.replace(/[^\d+]/g, "");
+    $("call-num").textContent = C.PAY_PHONE; $("call-num").href = tel; $("call-btn").href = tel;
+  }
   if (wa) $("wa-btn").href = wa + "?text=" + encodeURIComponent("Саламатсызбы! ИМРАН курсуна төлөм жасадым. Аты-жөнүм: ");
   else $("wa-btn").hidden = true;
 
