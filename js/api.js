@@ -76,6 +76,7 @@
       if (db.users.some(u => u.email === login)) throw new Error("Бул номер мурун катталган. «Кирүү» өтмөгүнөн кириңиз.");
       db.users.push({ id: uid(), email: login, password,
         profile: { full_name, phone, grp, contact_email: email || "", login, status: "pending", role: "student", created_at: new Date().toISOString() } });
+      db.session = db.users[db.users.length - 1].id;
       save(db);
     },
     async signIn(email, password) {
@@ -95,6 +96,7 @@
     },
     async setStatus(id, status) { const db = load(); const u = db.users.find(u => u.id === id); u.profile.status = status; save(db); },
     async setPassword(id, pw) { const db = load(); db.users.find(u => u.id === id).password = pw; save(db); },
+    async deleteUser(id) { const db = load(); if ((db.users.find(u => u.id === id) || {}).profile?.role === "admin") throw new Error("Окутуучунун аккаунтун өчүрүүгө болбойт"); db.users = db.users.filter(u => u.id !== id); db.submissions = db.submissions.filter(s => s.user_id !== id); save(db); },
     async listLessons() { return load().lessons.slice().sort((a, b) => a.n - b.n); },
     async saveLesson(l) {
       const db = load();
@@ -127,7 +129,6 @@
       const login = toLogin(phone);
       const { error } = await this.client().auth.signUp({ email: login, password, options: { data: { full_name, phone, grp, contact_email: email || "" }, emailRedirectTo: new URL("login.html", location.href).href } });
       if (error) throw new Error(tr(error.message));
-      await this.client().auth.signOut();
     },
     async signIn(email, password) {
       const { error } = await this.client().auth.signInWithPassword({ email: toLogin(email), password });
@@ -144,6 +145,7 @@
     async listProfiles() { return q(this.client().from("profiles").select("*").order("created_at", { ascending: false })); },
     async setStatus(id, status) { await q(this.client().from("profiles").update({ status }).eq("id", id)); },
     async setPassword(id, pw) { await q(this.client().rpc("admin_set_password", { target: id, new_password: pw })); },
+    async deleteUser(id) { await q(this.client().rpc("admin_delete_user", { target: id })); },
     async listLessons() { return q(this.client().from("lessons").select("*").order("n")); },
     async saveLesson(l) {
       const row = { ...l }; if (!row.id) delete row.id;

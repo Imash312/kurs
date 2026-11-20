@@ -67,6 +67,33 @@
   .wa-tip.show { opacity:1; transform:none; pointer-events:auto }
   .wa-tip button { position:absolute; top:6px; right:8px; border:0; background:none; font-size:18px; line-height:1; cursor:pointer; color:#777 }
 </style>
+<style>
+  /* ===== Курска жазылуу терезеси ===== */
+  .jm { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(10,10,10,.6); backdrop-filter:blur(4px); opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s }
+  .jm.open { opacity:1; visibility:visible }
+  .jm-box { position:relative; background:#fff; color:var(--ink); width:100%; max-width:520px; max-height:calc(100vh - 32px); overflow-y:auto; border-radius:24px; padding:30px 28px 26px; box-shadow:0 30px 80px -20px rgba(0,0,0,.5); transform:translateY(16px) scale(.98); transition:transform .3s cubic-bezier(.2,.8,.2,1) }
+  .jm.open .jm-box { transform:none }
+  .jm-x { position:absolute; top:12px; right:12px; width:40px; height:40px; border-radius:50%; border:0; background:var(--bg2); font-size:24px; line-height:1; cursor:pointer; color:var(--ink) }
+  .jm h2 { font-size:26px; margin:0 0 4px; padding-right:40px }
+  .jm-step { border-top:1px solid var(--line); padding-top:18px; margin-top:18px }
+  .jm-step h3 { display:flex; align-items:center; gap:10px; font-size:18px; margin:0 0 12px }
+  .jm-step h3 i { flex:none; width:30px; height:30px; border-radius:50%; background:var(--orange); color:#000; display:grid; place-items:center; font-style:normal; font-weight:800; font-size:15px }
+  .jm-pay { display:flex; gap:18px; align-items:center }
+  .jm-pay img { width:150px; border-radius:12px; border:1px solid var(--line); flex:none }
+  .jm-pay .big { font-family:var(--display); font-weight:800; font-size:22px; display:block; margin:2px 0 8px }
+  .jm-pass { position:relative }
+  .jm-pass button { position:absolute; right:8px; top:50%; transform:translateY(-50%); border:0; background:none; cursor:pointer; font-size:14px; color:var(--muted); padding:6px }
+  .jm .form-actions .btn { width:100% }
+  .jm-done { text-align:center; padding:6px 0 }
+  .jm-done .ok-ico { width:64px; height:64px; margin:0 auto 10px; border-radius:50%; background:#DCFCE7; display:grid; place-items:center; font-size:32px }
+  .jm-done .btn { width:100%; margin-top:10px }
+  @media (max-width:520px) {
+    .jm { padding:0; align-items:flex-end }
+    .jm-box { max-height:92vh; border-radius:22px 22px 0 0; padding:26px 20px 22px }
+    .jm-pay { flex-direction:column; align-items:flex-start }
+    .jm-pay img { width:170px }
+  }
+</style>
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -79,7 +106,7 @@
     <a href="#tolom">Төлөм</a>
     <a href="#baylanysh">Байланыш</a>
     <a href="login.html">Кирүү</a>
-    <a class="btn sm" href="#baa">Курска жазылуу</a>
+    <a class="btn sm" href="#tolom" data-join>Курска жазылуу</a>
   </nav>
 </div></header>
 
@@ -93,7 +120,7 @@
     <h1 style="font-size:clamp(26px,3.4vw,40px)">Компьютерден коркпой, <span class="hl">аны ишиңизге иштетиңиз</span></h1>
     <p class="lead">6 жумада Word, Excel, PowerPoint, интернет жана <b>ChatGPT</b> менен иштөөнү үйрөнөсүз. Сабактар <b>WhatsApp видео чалуу</b> аркылуу түз эфирде, кыргыз тилинде өтөт. Эч кандай программа орнотуунун кереги жок.</p>
     <div class="cta">
-      <a class="btn lg" href="#baa">Курска жазылуу</a>
+      <a class="btn lg" href="#tolom" data-join>Курска жазылуу</a>
       <a class="btn ghost lg wa-link" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.8 1.9 6.8L3 29l6.8-2.1c1.9 1 4 1.6 6.2 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.1c-2 0-3.9-.6-5.5-1.6l-.4-.2-4 1.2 1.3-3.9-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6 0-5.8 4.7-10.5 10.6-10.5s10.6 4.7 10.6 10.5S21.9 26.1 16 26.1zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.3 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg> Суроо берүү</a>
       <span class="price-note">Баасы: <b style="color:#fff">5 000 сом</b><br>толук курс үчүн</span>
     </div>
@@ -201,7 +228,7 @@
         <li>Үй тапшырмаларын окутуучу текшерет</li>
         <li>Курс бүткөндө сертификат</li>
       </ul>
-      <a class="btn lg" href="#tolom">Төлөп, курска жазылуу</a>
+      <a class="btn lg" href="#tolom" data-join>Төлөп, курска жазылуу</a>
     </div>
     <div class="plan">
       <span class="badge-top soon">Жакында</span>
@@ -236,12 +263,12 @@
       </div>
       <ol>
         <li><b>5 000 сом</b> төлөңүз (төлөмдүн комментарийине аты-жөнүңүздү жазыңыз).</li>
-        <li><a href="login.html#register">Сайттан катталыңыз</a>.</li>
+        <li><a href="#tolom" data-join>Сайттан катталыңыз</a> (аты-жөнүңүз, телефонуңуз жана сырсөз).</li>
         <li>Чектин скриншотун WhatsApp аркылуу жөнөтүңүз.</li>
         <li>Окутуучу текшерип, кабинетиңизди ачат.</li>
       </ol>
       <div class="row" style="margin-top:22px">
-        <a class="btn" href="login.html#register">Катталуу</a>
+        <a class="btn" href="#tolom" data-join>Катталуу</a>
         <a class="btn ghost" id="wa-btn" target="_blank" rel="noopener" href="#">Чекти WhatsApp'ка жөнөтүү</a>
       </div>
     </div>
@@ -282,7 +309,7 @@
   <h2>Компьютерди үйрөнүүнү кийинкиге калтырбаңыз</h2>
   <p>Орундар чектелүү: түз эфирде ар бир окуучуга убакыт бөлүнүшү үчүн топ чоң болбойт.</p>
   <div class="row" style="justify-content:center">
-    <a class="btn dark lg" href="#tolom">Курска жазылуу · 5 000 сом</a>
+    <a class="btn dark lg" href="#tolom" data-join>Курска жазылуу · 5 000 сом</a>
     <a class="btn ghost lg wa-link" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.8 1.9 6.8L3 29l6.8-2.1c1.9 1 4 1.6 6.2 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.1c-2 0-3.9-.6-5.5-1.6l-.4-.2-4 1.2 1.3-3.9-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6 0-5.8 4.7-10.5 10.6-10.5s10.6 4.7 10.6 10.5S21.9 26.1 16 26.1zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.3 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg> Адегенде суроо берүү</a>
   </div>
 </div></section>
@@ -290,6 +317,53 @@
 
 <a class="wa-float wa-link" href="#" target="_blank" rel="noopener" aria-label="WhatsApp аркылуу жазуу"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.8 1.9 6.8L3 29l6.8-2.1c1.9 1 4 1.6 6.2 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.1c-2 0-3.9-.6-5.5-1.6l-.4-.2-4 1.2 1.3-3.9-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6 0-5.8 4.7-10.5 10.6-10.5s10.6 4.7 10.6 10.5S21.9 26.1 16 26.1zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.3 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg><span>Суроо берүү</span></a>
 <div class="wa-tip" id="wa-tip" role="status"><button type="button" aria-label="Жабуу">×</button>Суроолоруңуз барбы? 👋<br><span style="font-weight:400;color:#555">WhatsApp'ка жазыңыз</span></div>
+
+
+<!-- Курска жазылуу терезеси -->
+<div class="jm" id="jm" role="dialog" aria-modal="true" aria-labelledby="jm-title">
+  <div class="jm-box">
+    <button class="jm-x" type="button" aria-label="Жабуу" data-close>×</button>
+    <h2 id="jm-title">Курска жазылуу</h2>
+    <p class="muted small" style="margin:0">Компьютердик сабаттуулук · 12 сабак · <b style="color:var(--ink)">5 000 сом</b></p>
+
+    <div id="jm-form-wrap">
+      <div class="jm-step">
+        <h3><i>1</i>Төлөңүз</h3>
+        <div class="jm-pay">
+          <img id="jm-qr" alt="Төлөм үчүн QR код">
+          <div>
+            <div class="small muted">QR кодду банк тиркемеси менен сканерлеңиз же номерге которуңуз:</div>
+            <span class="big" id="jm-phone">+996 997 161 357</span>
+            <button class="btn dark sm" type="button" id="jm-copy">Номерди көчүрүү</button>
+            <div class="small muted" style="margin-top:8px" id="jm-bank">MBank · Ыманалы Н.</div>
+          </div>
+        </div>
+      </div>
+
+      <form class="jm-step" id="jm-form">
+        <h3><i>2</i>Катталыңыз</h3>
+        <label for="jm-name">Аты-жөнүңүз</label>
+        <input id="jm-name" required autocomplete="name" placeholder="Мисалы: Айбек Токтогулов">
+        <label for="jm-tel">Телефон номериңиз (WhatsApp)</label>
+        <input id="jm-tel" type="tel" required autocomplete="tel" placeholder="0700 123 456">
+        <label for="jm-pw">Сырсөз ойлоп табыңыз (кеминде 6 белги)</label>
+        <div class="jm-pass"><input id="jm-pw" type="password" required minlength="6" autocomplete="new-password"><button type="button" id="jm-eye">Көрсөтүү</button></div>
+        <div class="small muted" style="margin-top:6px">Сайтка ушул телефон номери жана сырсөз менен киресиз. Сырсөздү жазып алыңыз.</div>
+        <div class="form-actions"><button class="btn lg" type="submit">Катталуу</button></div>
+        <div id="jm-msg"></div>
+        <p class="small muted" style="text-align:center;margin:14px 0 0">Мурун катталгансызбы? <a href="login.html">Кирүү</a></p>
+      </form>
+    </div>
+
+    <div class="jm-done" id="jm-done" hidden>
+      <div class="ok-ico">✓</div>
+      <h3 style="font-size:22px;margin:0 0 6px">Сиз катталдыңыз!</h3>
+      <p class="muted" style="margin:0 0 6px"><b style="color:var(--ink)"><i style="font-style:normal;color:var(--orange-dark)">3.</i> Эми төлөмдүн чегин WhatsApp'ка жөнөтүңүз.</b> Окутуучу текшерип, кабинетиңизди ачат.</p>
+      <a class="btn wa lg" id="jm-wa" target="_blank" rel="noopener" href="#">Чекти WhatsApp'ка жөнөтүү</a>
+      <a class="btn ghost" href="cabinet.html">Кабинетке өтүү</a>
+    </div>
+  </div>
+</div>
 
 <footer><div class="wrap">
   <a class="lockup" href="index.html"><img src="img/logo-dark.webp" alt="">
@@ -302,6 +376,7 @@
   // Почтадагы ырастоо шилтемеси башкы бетке алып келсе, кирүү барагына өткөрөт
   if (/access_token|error_description/.test(location.hash)) location.replace("login.html" + location.hash);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/brand.js"></script>
@@ -381,6 +456,53 @@
     tip.onclick = e => { if (e.target.tagName !== "BUTTON") fab.click(); };
     if (!closed) setTimeout(() => { showFab(); tip.classList.add("show"); setTimeout(hide, 7000); }, 15000);
   } else if (tip) tip.remove();
+})();
+</script>
+<script>
+(function () {
+  const C = K.C, $ = id => document.getElementById(id);
+  const jm = $("jm"); if (!jm) return;
+  let lastFocus = null;
+  const open = e => {
+    if (e) e.preventDefault();
+    lastFocus = document.activeElement;
+    jm.classList.add("open"); document.body.style.overflow = "hidden";
+    setTimeout(() => { const n = $("jm-name"); if (n && !$("jm-form-wrap").hidden) n.focus({ preventScroll: true }); }, 250);
+  };
+  const close = () => { jm.classList.remove("open"); document.body.style.overflow = ""; if (lastFocus) lastFocus.focus({ preventScroll: true }); };
+  document.querySelectorAll("[data-join]").forEach(a => a.addEventListener("click", open));
+  jm.addEventListener("click", e => { if (e.target === jm || e.target.hasAttribute("data-close")) close(); });
+  addEventListener("keydown", e => { if (e.key === "Escape" && jm.classList.contains("open")) close(); });
+  if (location.hash === "#jazyluu") open();
+
+  // Төлөм маалыматы
+  $("jm-qr").src = C.QR_IMAGE || "img/qr.jpg";
+  if (C.PAY_PHONE) $("jm-phone").textContent = C.PAY_PHONE;
+  $("jm-bank").textContent = [C.PAY_BANK, C.PAY_NAME].filter(Boolean).join(" · ");
+  $("jm-copy").onclick = async e => {
+    const num = (C.PAY_PHONE || "").replace(/[^\d+]/g, "");
+    try { await navigator.clipboard.writeText(num); e.target.textContent = "✓ Көчүрүлдү"; } catch (err) { e.target.textContent = num; }
+    setTimeout(() => e.target.textContent = "Номерди көчүрүү", 2500);
+  };
+  $("jm-eye").onclick = () => { const p = $("jm-pw"), show = p.type === "password"; p.type = show ? "text" : "password"; $("jm-eye").textContent = show ? "Жашыруу" : "Көрсөтүү"; };
+
+  // Каттоо
+  $("jm-form").onsubmit = async e => {
+    e.preventDefault();
+    const b = e.submitter || e.target.querySelector("button[type=submit]"); b.disabled = true;
+    const name = $("jm-name").value.trim(), tel = $("jm-tel").value.trim();
+    $("jm-msg").innerHTML = "";
+    try {
+      await API.signUp({ email: "", password: $("jm-pw").value, full_name: name, phone: tel });
+      const wa = C.WHATSAPP ? "https://wa.me/" + encodeURIComponent(C.WHATSAPP) + "?text=" + encodeURIComponent(`Саламатсызбы! ИМРАН курсуна төлөдүм жана сайттан катталдым.\nАты-жөнүм: ${name}\nТелефон: ${tel}\n(Чекти тиркеп жатам)`) : "#";
+      $("jm-wa").href = wa;
+      $("jm-form-wrap").hidden = true; $("jm-done").hidden = false;
+      jm.querySelector(".jm-box").scrollTop = 0;
+    } catch (err) {
+      $("jm-msg").innerHTML = `<div class="msg err">${K.esc(err.message)}</div>`;
+    }
+    b.disabled = false;
+  };
 })();
 </script>
 </body>

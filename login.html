@@ -40,16 +40,6 @@
     <label for="rph">Телефон номери (WhatsApp)</label>
     <input id="rph" type="tel" required placeholder="0700 123 456" autocomplete="tel">
     <div class="small muted" style="margin-top:6px">Ушул номер менен сайтка киресиз.</div>
-    <label for="rg">Сиз кимсиз?</label>
-    <select id="rg" required>
-      <option value="">Тандаңыз…</option>
-      <option value="gov">Мамлекеттик кызматчы</option>
-      <option value="teacher">Мугалим</option>
-      <option value="student">Студент</option>
-      <option value="other">Башка</option>
-    </select>
-    <label for="re">Электрондук почта <span class="muted" style="font-weight:400">(милдеттүү эмес)</span></label>
-    <input id="re" type="email" autocomplete="email">
     <label for="rp">Сырсөз ойлоп табыңыз (кеминде 6 белги)</label>
     <div class="small muted" style="margin:-2px 0 6px">Сырсөздү бир жерге жазып алыңыз. Унутуп калсаңыз, окутуучуга WhatsApp'тан жазыңыз.</div>
     <input id="rp" type="password" required minlength="6" autocomplete="new-password">
@@ -93,9 +83,9 @@
   $("f-reg").onsubmit = async e => {
     e.preventDefault(); const b = e.submitter; b.disabled = true;
     try {
-      await API.signUp({ email: $("re").value.trim(), password: $("rp").value,
-        full_name: $("rn").value.trim(), phone: $("rph").value.trim(), grp: $("rg").value });
-      $("f-reg").reset(); tab(false);
+      await API.signUp({ email: "", password: $("rp").value,
+        full_name: $("rn").value.trim(), phone: $("rph").value.trim() });
+      location.href = "cabinet.html"; return;
       show("Өтүнмөңүз кабыл алынды! Сайтка <b>телефон номериңиз</b> жана сырсөзүңүз менен киресиз. Төлөмдүн чегин WhatsApp'ка жөнөтүңүз, окутуучу текшерип кабинетиңизди ачат.", "ok");
     } catch (err) { show(K.esc(err.message), "err"); }
     b.disabled = false;

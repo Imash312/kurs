@@ -57,7 +57,7 @@
 <script src="js/brand.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-const { esc, fmtDate, safeUrl, GROUPS, STATUS } = K;
+const { esc, fmtDate, safeUrl, STATUS } = K;
 $("out").onclick = async () => { await API.signOut(); location.href = "login.html"; };
 
 const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
@@ -84,21 +84,28 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
     const f = $("flt").value;
     const list = f === "all" ? all : all.filter(u => u.status === f);
     $("users").innerHTML = list.length ? `<div class="table-wrap"><table>
-      <tr><th>Аты-жөнү</th><th>Логин / байланыш</th><th>Тобу</th><th>Статус</th><th></th></tr>
+      <tr><th>Аты-жөнү</th><th>Логин / байланыш</th><th>Статус</th><th></th></tr>
       ${list.map(u => `<tr><td><b>${esc(u.full_name)}</b><div class="muted small">${fmtDate(u.created_at)}</div></td>
         <td><div class="small muted">Логин:</div><b>${esc(K.loginLabel(u.login || u.email) || u.phone)}</b>
           <div class="small muted" style="margin-top:4px">${esc(u.phone)}${u.contact_email ? " · " + esc(u.contact_email) : ""}</div></td>
-        <td>${esc(GROUPS[u.grp] || "")}</td>
         <td><span class="badge ${u.status === "approved" ? "ok" : u.status === "rejected" ? "bad" : "wait"}">${STATUS[u.status] || u.status}</span></td>
         <td><div class="row">
           ${u.status !== "approved" ? `<button class="btn ok sm" data-a="approved" data-id="${esc(u.id)}" type="button">Бекитүү</button>` : ""}
           ${u.status !== "rejected" ? `<button class="btn ghost sm" data-a="rejected" data-id="${esc(u.id)}" type="button">${u.status === "approved" ? "Жабуу" : "Четке кагуу"}</button>` : ""}
           <button class="btn ghost sm" data-pw="${esc(u.id)}" type="button">🔑 Сырсөз</button>
+          <button class="btn ghost sm" data-del="${esc(u.id)}" type="button" style="color:var(--bad)">🗑 Өчүрүү</button>
           ${waNum(u.phone) ? `<a class="btn sm" style="background:#25D366;color:#fff" href="https://wa.me/${waNum(u.phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
         </div><div class="pw-box" id="pw-${esc(u.id)}"></div></td></tr>`).join("")}</table></div>`
       : `<div class="empty">Бул тизмеде эч ким жок.</div>`;
     $("users").querySelectorAll("button[data-a]").forEach(b => b.onclick = async () => {
       b.disabled = true; await API.setStatus(b.dataset.id, b.dataset.a); renderUsers();
+    });
+    $("users").querySelectorAll("button[data-del]").forEach(b => b.onclick = async () => {
+      const u = list.find(x => x.id === b.dataset.del);
+      if (!confirm(`«${u.full_name}» биротоло өчүрүлсүнбү?\n\nАнын аккаунту жана тапшырмалары толугу менен өчөт. Муну кайтарып болбойт.`)) return;
+      b.disabled = true;
+      try { await API.deleteUser(u.id); renderUsers(); }
+      catch (err) { alert("Ката: " + err.message); b.disabled = false; }
     });
     $("users").querySelectorAll("button[data-pw]").forEach(b => b.onclick = () => {
       const u = list.find(x => x.id === b.dataset.pw), box = $("pw-" + u.id);
