@@ -93,8 +93,9 @@ function gate(icon, title, text) {
   const next = lessons.find(l => l.starts_at && new Date(l.starts_at).getTime() > now - 2 * 3600e3);
   if (next) $("next").innerHTML = `<div class="next">
       <div><div class="muted small">Кийинки түз эфир</div><h2 style="margin:4px 0">${next.n}. ${esc(next.title)}</h2>
-      <div class="muted">${fmtDate(next.starts_at)}</div></div>
-      ${safeUrl(next.zoom_url) ? `<a class="btn" href="${esc(next.zoom_url)}" target="_blank" rel="noopener">Сабакка кошулуу</a>` : `<span class="muted">Шилтеме кийин коюлат</span>`}
+      <div class="muted">${fmtDate(next.starts_at)}</div>
+      <div class="muted small" style="margin-top:8px">Сабак WhatsApp тобунда видео чалуу аркылуу өтөт. Убагы келгенде топто «Кошулуу» баскычын басыңыз.</div></div>
+      ${safeUrl(next.zoom_url) ? `<a class="btn" href="${esc(next.zoom_url)}" target="_blank" rel="noopener">WhatsApp тобун ачуу</a>` : `<span class="muted">Шилтеме кийин коюлат</span>`}
     </div>`;
 
   $("p-lessons").innerHTML = lessons.length ? lessons.map(l => {
@@ -109,7 +110,7 @@ function gate(icon, title, text) {
         <div class="gap"></div>
         ${l.description ? `<p>${esc(l.description)}</p>` : ``}
         <div class="row">
-          ${safeUrl(l.zoom_url) ? `<a class="btn sm" href="${esc(l.zoom_url)}" target="_blank" rel="noopener">Zoom'го кошулуу</a>` : ``}
+          ${safeUrl(l.zoom_url) ? `<a class="btn sm" href="${esc(l.zoom_url)}" target="_blank" rel="noopener">WhatsApp тобун ачуу</a>` : ``}
           ${safeUrl(l.materials_url) ? `<a class="btn ghost sm" href="${esc(l.materials_url)}" target="_blank" rel="noopener">Материалдар</a>` : ``}
         </div>
         ${yt ? `<div class="video"><iframe src="${yt}" allowfullscreen loading="lazy" title="Сабактын жазуусу"></iframe></div>`

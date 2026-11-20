@@ -25,8 +25,8 @@
 
   <form id="f-login">
     <h2 style="font-size:24px">Жеке кабинетке кирүү</h2>
-    <label for="le">Электрондук почта</label>
-    <input id="le" type="email" required autocomplete="email">
+    <label for="le">Телефон номери же почта</label>
+    <input id="le" type="text" required autocomplete="username" placeholder="0700 123 456" inputmode="text">
     <label for="lp">Сырсөз</label>
     <input id="lp" type="password" required autocomplete="current-password">
     <div class="form-actions"><button class="btn" type="submit">Кирүү</button></div>
@@ -37,8 +37,9 @@
     <div class="msg info" style="margin:0 0 6px">Курстун баасы <b>5 000 сом</b>. Төлөмдү <a href="index.html#tolom">QR код же телефон номери</a> аркылуу жасап, чекти WhatsApp'ка жөнөтүңүз. Окутуучу текшергенден кийин кабинетиңиз ачылат.</div>
     <label for="rn">Аты-жөнүңүз</label>
     <input id="rn" required autocomplete="name">
-    <label for="rph">Телефон (WhatsApp)</label>
-    <input id="rph" type="tel" required placeholder="+996 ___ ___ ___" autocomplete="tel">
+    <label for="rph">Телефон номери (WhatsApp)</label>
+    <input id="rph" type="tel" required placeholder="0700 123 456" autocomplete="tel">
+    <div class="small muted" style="margin-top:6px">Ушул номер менен сайтка киресиз.</div>
     <label for="rg">Сиз кимсиз?</label>
     <select id="rg" required>
       <option value="">Тандаңыз…</option>
@@ -47,9 +48,10 @@
       <option value="student">Студент</option>
       <option value="other">Башка</option>
     </select>
-    <label for="re">Электрондук почта</label>
-    <input id="re" type="email" required autocomplete="email">
+    <label for="re">Электрондук почта <span class="muted" style="font-weight:400">(милдеттүү эмес)</span></label>
+    <input id="re" type="email" autocomplete="email">
     <label for="rp">Сырсөз ойлоп табыңыз (кеминде 6 белги)</label>
+    <div class="small muted" style="margin:-2px 0 6px">Сырсөздү бир жерге жазып алыңыз. Унутуп калсаңыз, окутуучуга WhatsApp'тан жазыңыз.</div>
     <input id="rp" type="password" required minlength="6" autocomplete="new-password">
     <div class="form-actions"><button class="btn" type="submit">Өтүнмө жөнөтүү</button></div>
   </form>
@@ -74,12 +76,12 @@
 
   if (API.mode === "demo") $("demo").innerHTML =
     `<div class="demo-note"><b>Демо режим.</b> Маалымат ушул браузерде гана сакталат.<br>
-     Окутуучу катары кирүү: <b>admin@demo.kg</b> / <b>admin123</b></div>`;
+     Окутуучу: <b>admin@demo.kg</b> / <b>admin123</b> · Окуучу: <b>0700 111 222</b> / <b>123456</b></div>`;
 
   const home = u => u.role === "admin" ? "admin.html" : "cabinet.html";
   // Почтадагы шилтемеден келгенде
   const h = new URLSearchParams(location.hash.slice(1));
-  if (h.get("error_description")) show("Шилтеме иштебей калды: " + K.esc(h.get("error_description")) + ". Почта жана сырсөз менен кирип көрүңүз.", "err");
+  if (h.get("error_description")) show("Шилтеме иштебей калды: " + K.esc(h.get("error_description")) + ". Телефон номериңиз (же почтаңыз) жана сырсөз менен кирип көрүңүз.", "err");
   else if (h.get("access_token")) show("Почтаңыз ырасталды! Кирип жатасыз…", "ok");
   API.me().then(u => { if (u) location.href = home(u); });
 
@@ -94,9 +96,7 @@
       await API.signUp({ email: $("re").value.trim(), password: $("rp").value,
         full_name: $("rn").value.trim(), phone: $("rph").value.trim(), grp: $("rg").value });
       $("f-reg").reset(); tab(false);
-      show(API.mode === "live"
-        ? "Өтүнмөңүз кабыл алынды! Почтаңызга келген каттагы шилтемени басып, каттоону ырастаңыз (кат келбесе «Спам» папкасын караңыз). Андан кийин окутуучу кабинетиңизди ачат."
-        : "Өтүнмөңүз кабыл алынды! Окутуучу бекиткенден кийин кире аласыз.", "ok");
+      show("Өтүнмөңүз кабыл алынды! Сайтка <b>телефон номериңиз</b> жана сырсөзүңүз менен киресиз. Төлөмдүн чегин WhatsApp'ка жөнөтүңүз, окутуучу текшерип кабинетиңизди ачат.", "ok");
     } catch (err) { show(K.esc(err.message), "err"); }
     b.disabled = false;
   };

@@ -68,6 +68,8 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
   });
 
   let lessons = [];
+  // Телефонду WhatsApp форматына келтирүү: 0700123456 → 996700123456
+  const waNum = p => { let d = String(p || "").replace(/\D/g, ""); if (d.length === 10 && d.startsWith("0")) d = "996" + d.slice(1); else if (d.length === 9) d = "996" + d; return d.length >= 11 ? d : ""; };
 
   async function renderUsers() {
     const all = (await API.listProfiles()).filter(u => u.role !== "admin");
@@ -77,18 +79,37 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
     const f = $("flt").value;
     const list = f === "all" ? all : all.filter(u => u.status === f);
     $("users").innerHTML = list.length ? `<div class="table-wrap"><table>
-      <tr><th>Аты-жөнү</th><th>Байланыш</th><th>Тобу</th><th>Статус</th><th></th></tr>
+      <tr><th>Аты-жөнү</th><th>Логин / байланыш</th><th>Тобу</th><th>Статус</th><th></th></tr>
       ${list.map(u => `<tr><td><b>${esc(u.full_name)}</b><div class="muted small">${fmtDate(u.created_at)}</div></td>
-        <td>${esc(u.phone)}<div class="muted small">${esc(u.email || "")}</div></td>
+        <td><div class="small muted">Логин:</div><b>${esc(K.loginLabel(u.login || u.email) || u.phone)}</b>
+          <div class="small muted" style="margin-top:4px">${esc(u.phone)}${u.contact_email ? " · " + esc(u.contact_email) : ""}</div></td>
         <td>${esc(GROUPS[u.grp] || "")}</td>
         <td><span class="badge ${u.status === "approved" ? "ok" : u.status === "rejected" ? "bad" : "wait"}">${STATUS[u.status] || u.status}</span></td>
         <td><div class="row">
           ${u.status !== "approved" ? `<button class="btn ok sm" data-a="approved" data-id="${esc(u.id)}" type="button">Бекитүү</button>` : ""}
           ${u.status !== "rejected" ? `<button class="btn ghost sm" data-a="rejected" data-id="${esc(u.id)}" type="button">${u.status === "approved" ? "Жабуу" : "Четке кагуу"}</button>` : ""}
-        </div></td></tr>`).join("")}</table></div>`
+          <button class="btn ghost sm" data-pw="${esc(u.id)}" type="button">🔑 Сырсөз</button>
+          ${waNum(u.phone) ? `<a class="btn sm" style="background:#25D366;color:#fff" href="https://wa.me/${waNum(u.phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+        </div><div class="pw-box" id="pw-${esc(u.id)}"></div></td></tr>`).join("")}</table></div>`
       : `<div class="empty">Бул тизмеде эч ким жок.</div>`;
     $("users").querySelectorAll("button[data-a]").forEach(b => b.onclick = async () => {
       b.disabled = true; await API.setStatus(b.dataset.id, b.dataset.a); renderUsers();
+    });
+    $("users").querySelectorAll("button[data-pw]").forEach(b => b.onclick = () => {
+      const u = list.find(x => x.id === b.dataset.pw), box = $("pw-" + u.id);
+      const suggest = String(Math.floor(100000 + Math.random() * 900000));
+      box.innerHTML = `<form class="row" style="margin-top:10px">
+          <input name="pw" value="${suggest}" minlength="6" required style="max-width:150px">
+          <button class="btn sm" type="submit">Сактоо</button></form><div class="small muted pw-msg" style="margin-top:6px">Жаңы сырсөздү жазыңыз же сунушталганын калтырыңыз.</div>`;
+      box.querySelector("form").onsubmit = async e => {
+        e.preventDefault(); const pw = e.target.pw.value.trim(); const m = box.querySelector(".pw-msg");
+        try {
+          await API.setPassword(u.id, pw);
+          const login = K.loginLabel(u.login || u.email) || u.phone;
+          const text = `Саламатсызбы, ${u.full_name}! ИМРАН курсунун сайтына кирүү:\n${new URL("login.html", location.href).href}\nЛогин: ${login}\nЖаңы сырсөз: ${pw}`;
+          m.innerHTML = `✓ Сырсөз алмашты: <b>${esc(pw)}</b>` + (waNum(u.phone) ? ` · <a href="https://wa.me/${waNum(u.phone)}?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp'тан окуучуга жөнөтүү</a>` : "");
+        } catch (err) { m.textContent = "Ката: " + err.message; }
+      };
     });
   }
   $("flt").onchange = renderUsers;
@@ -96,7 +117,7 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
   async function renderLessons() {
     lessons = await API.listLessons();
     $("lessons").innerHTML = lessons.length ? `<div class="table-wrap"><table>
-      <tr><th>№</th><th>Тема</th><th>Күнү</th><th>Zoom</th><th>Жазуу</th><th></th></tr>
+      <tr><th>№</th><th>Тема</th><th>Күнү</th><th>WhatsApp</th><th>Жазуу</th><th></th></tr>
       ${lessons.map(l => `<tr><td>${l.n}</td><td><b>${esc(l.title)}</b></td><td>${fmtDate(l.starts_at)}</td>
         <td>${safeUrl(l.zoom_url) ? "✓" : "—"}</td><td>${safeUrl(l.video_url) ? "✓" : "—"}</td>
         <td><button class="btn ghost sm" data-e="${esc(l.id)}" type="button">Түзөтүү</button></td></tr>`).join("")}</table></div>`
@@ -114,7 +135,7 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
       </div>
       <label>Темасы</label><input name="title" value="${esc(l.title)}" required>
       <label>Кыскача мазмуну</label><input name="description" value="${esc(l.description)}">
-      <label>Zoom / Google Meet шилтемеси</label><input name="zoom_url" type="url" value="${esc(l.zoom_url)}" placeholder="https://zoom.us/j/…">
+      <label>WhatsApp тобунун шилтемеси (сабак ушул топто видео чалуу аркылуу өтөт)</label><input name="zoom_url" type="url" value="${esc(l.zoom_url)}" placeholder="https://chat.whatsapp.com/…">
       <label>Сабактын жазуусу (YouTube шилтемеси, жеке/unlisted)</label><input name="video_url" type="url" value="${esc(l.video_url)}" placeholder="https://youtu.be/…">
       <label>Материалдар (Google Drive папкасы ж.б.)</label><input name="materials_url" type="url" value="${esc(l.materials_url)}">
       <label>Үй тапшырмасы</label><textarea name="homework">${esc(l.homework)}</textarea>
