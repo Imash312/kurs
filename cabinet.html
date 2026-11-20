@@ -9,6 +9,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
 <link rel="icon" href="img/logo-light.png">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  @keyframes popIn { 0% { transform:scale(.4); opacity:0 } 60% { transform:scale(1.15); opacity:1 } 100% { transform:scale(1) } }
+  @keyframes draw { from { stroke-dashoffset:20 } to { stroke-dashoffset:0 } }
+  .done-pop { display:inline-flex; align-items:center; gap:8px; margin-left:12px; color:#15803D; font-weight:700; vertical-align:middle }
+  .done-pop svg { animation:popIn .45s cubic-bezier(.2,.8,.2,1) both }
+  .done-pop path { stroke-dasharray:20; animation:draw .35s ease-out .25s both }
+  @media (prefers-reduced-motion: reduce) { .done-pop svg, .done-pop path { animation:none } }
+</style>
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -133,7 +141,7 @@ function gate(icon, title, text) {
     e.preventDefault(); const t = f.t.value.trim(), u = f.u.value.trim();
     if (!t && !u) return;
     e.submitter.disabled = true;
-    try { await API.submitHomework(f.dataset.id, t, u); f.querySelector(".hw-msg").textContent = "  ✓ Тапшырылды"; f.reset(); renderHw(); }
+    try { await API.submitHomework(f.dataset.id, t, u); f.querySelector(".hw-msg").innerHTML = `<span class="done-pop"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#15803D"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Тапшырылды!</span>`; f.reset(); renderHw(); }
     catch (err) { f.querySelector(".hw-msg").textContent = "  " + err.message; }
     e.submitter.disabled = false;
   });

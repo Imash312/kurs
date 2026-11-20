@@ -24,6 +24,49 @@
   .contact .row .btn{flex:1 1 200px}
   @media (max-width:760px){.contact{grid-template-columns:1fr;padding:28px}}
 </style>
+<script>
+  // Анимация «кыймылды азайтуу» жөндөөсү күйгүзүлбөгөн колдонуучуларга гана көрсөтүлөт
+  try { if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("anim"); } catch (e) {}
+</script>
+<style>
+  /* ===== 1. Башкы экрандын ачылышы ===== */
+  @keyframes chUp { from { opacity:0; transform:translateY(55%) } to { opacity:1; transform:none } }
+  @keyframes spread { from { clip-path:inset(0 50% 0 50%); opacity:.2 } to { clip-path:inset(0 0 0 0); opacity:1 } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(22px) } to { opacity:1; transform:none } }
+  html.anim .hero .wm.xl b .ch { display:inline-block; opacity:0; animation:chUp .65s cubic-bezier(.2,.8,.2,1) forwards; animation-delay:calc(var(--i) * 70ms + .1s) }
+  html.anim .hero .wm.xl small { clip-path:inset(0 50% 0 50%); animation:spread .8s cubic-bezier(.3,.7,.2,1) .55s forwards }
+  html.anim .hero .inner > :not(.wm) { opacity:0; animation:fadeUp .7s cubic-bezier(.2,.8,.2,1) forwards }
+  html.anim .hero .inner > h1 { animation-delay:.85s }
+  html.anim .hero .inner > .lead { animation-delay:1s }
+  html.anim .hero .inner > .cta { animation-delay:1.15s }
+  html.anim .hero .inner > .chips { animation-delay:1.3s }
+
+  /* ===== 2. Жалындын «дем алышы» ===== */
+  @keyframes flameIn { from { opacity:0; transform:translateY(-46%) scale(.92) } to { opacity:.95; transform:translateY(-50%) scale(1) } }
+  @keyframes breathe {
+    0%,100% { transform:translateY(-50%) scale(1) rotate(0deg); filter:drop-shadow(0 0 0 rgba(244,149,35,0)) }
+    50% { transform:translateY(-51.5%) scale(1.025) rotate(-.6deg); filter:drop-shadow(0 0 38px rgba(244,149,35,.35)) }
+  }
+  @keyframes glowDrift { 0%,100% { transform:translate(0,0) scale(1); opacity:1 } 50% { transform:translate(-30px,20px) scale(1.08); opacity:.75 } }
+  html.anim .hero .flame { transform-origin:60% 80%; animation:flameIn 1.2s cubic-bezier(.2,.8,.2,1) .2s both, breathe 6s ease-in-out 1.4s infinite }
+  html.anim .hero .glow { animation:glowDrift 9s ease-in-out infinite }
+  @media (max-width:860px) { html.anim .hero .flame { animation:none } }
+
+  /* ===== 3. Ылдый жылганда бөлүмдөрдүн пайда болушу ===== */
+  html.anim [data-reveal] { opacity:0; transform:translateY(26px); transition:opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1); transition-delay:calc(var(--d, 0) * 80ms) }
+  html.anim [data-reveal].in { opacity:1; transform:none }
+
+  /* ===== 6. WhatsApp баскычы ===== */
+  @keyframes waIn { 0% { opacity:0; transform:translateY(30px) scale(.6) } 60% { opacity:1; transform:translateY(-6px) scale(1.06) } 100% { opacity:1; transform:none } }
+  @keyframes waRing { 0% { transform:scale(1); opacity:.55 } 70%,100% { transform:scale(1.7); opacity:0 } }
+  html.anim .wa-float { opacity:0; pointer-events:none; transform:translateY(30px) scale(.6) }
+  html.anim .wa-float.show { opacity:1; transform:none; pointer-events:auto; animation:waIn .6s cubic-bezier(.2,.8,.2,1) forwards }
+  .wa-float::after { content:""; position:absolute; inset:0; border-radius:inherit; background:#25D366; z-index:-1; opacity:0 }
+  html.anim .wa-float.show::after { animation:waRing 2.4s ease-out 1s infinite; animation-delay:1s }
+  .wa-tip { position:fixed; right:18px; bottom:86px; z-index:51; background:#fff; color:#111; font-weight:600; font-size:15px; padding:12px 34px 12px 16px; border-radius:16px 16px 4px 16px; box-shadow:0 14px 34px -12px rgba(0,0,0,.4); opacity:0; transform:translateY(10px) scale(.95); transition:opacity .35s, transform .35s; pointer-events:none; max-width:240px }
+  .wa-tip.show { opacity:1; transform:none; pointer-events:auto }
+  .wa-tip button { position:absolute; top:6px; right:8px; border:0; background:none; font-size:18px; line-height:1; cursor:pointer; color:#777 }
+</style>
 </head>
 <body>
 <header class="top"><div class="wrap">
@@ -246,6 +289,7 @@
 </main>
 
 <a class="wa-float wa-link" href="#" target="_blank" rel="noopener" aria-label="WhatsApp аркылуу жазуу"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.5.7 4.8 1.9 6.8L3 29l6.8-2.1c1.9 1 4 1.6 6.2 1.6 7 0 12.7-5.6 12.7-12.6S23 3 16 3zm0 23.1c-2 0-3.9-.6-5.5-1.6l-.4-.2-4 1.2 1.3-3.9-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6 0-5.8 4.7-10.5 10.6-10.5s10.6 4.7 10.6 10.5S21.9 26.1 16 26.1zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.3 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg><span>Суроо берүү</span></a>
+<div class="wa-tip" id="wa-tip" role="status"><button type="button" aria-label="Жабуу">×</button>Суроолоруңуз барбы? 👋<br><span style="font-weight:400;color:#555">WhatsApp'ка жазыңыз</span></div>
 
 <footer><div class="wrap">
   <a class="lockup" href="index.html"><img src="img/logo-dark.webp" alt="">
@@ -296,6 +340,48 @@
   if (wa) c.push(`<a href="${wa}" target="_blank" rel="noopener">WhatsApp</a>`);
   if (C.TELEGRAM) c.push(`<a href="https://t.me/${K.esc(C.TELEGRAM)}" target="_blank" rel="noopener">Telegram</a>`);
   $("contacts").innerHTML = c.join(" · ");
+</script>
+<script>
+(function () {
+  const anim = document.documentElement.classList.contains("anim");
+
+  // 1. ИМРАН тамгаларын бөлүү
+  if (anim) {
+    const b = document.querySelector(".hero .wm.xl b");
+    if (b) b.innerHTML = [...b.textContent].map((c, i) => `<span class="ch" style="--i:${i}">${c}</span>`).join("");
+    if (window.fitWordmarks) window.fitWordmarks();
+  }
+
+  // 3. Бөлүмдөр экранга киргенде пайда болушу
+  const groups = [".sec-head", ".skills .skill", ".ba .col", "section .cards .card", ".steps .card", ".price .plan", ".pay", ".contact", ".band h2", ".band p", ".band .row"];
+  const els = [];
+  groups.forEach(sel => document.querySelectorAll(sel).forEach((el, i) => {
+    if (el.closest(".hero")) return;
+    el.setAttribute("data-reveal", ""); el.style.setProperty("--d", el.parentElement.children.length > 1 && !/sec-head|pay|contact/.test(el.className) ? i % 8 : 0);
+    els.push(el);
+  }));
+  if (anim && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }), { threshold: .12, rootMargin: "0px 0px -40px 0px" });
+    els.forEach(el => io.observe(el));
+  } else els.forEach(el => el.classList.add("in"));
+
+  // 6. WhatsApp баскычы: бир аз ылдый жылгандан кийин же 5 секунддан кийин чыгат
+  const fab = document.querySelector(".wa-float"), tip = document.getElementById("wa-tip");
+  let shown = false;
+  const showFab = () => { if (shown || !fab) return; shown = true; fab.classList.add("show"); };
+  if (!anim) showFab();
+  addEventListener("scroll", () => { if (scrollY > 250) showFab(); }, { passive: true });
+  setTimeout(showFab, 5000);
+  if (tip && fab && !fab.hidden) {
+    let closed = false; try { closed = sessionStorage.getItem("waTip") === "1"; } catch (e) {}
+    const hide = () => { tip.classList.remove("show"); try { sessionStorage.setItem("waTip", "1"); } catch (e) {} };
+    tip.querySelector("button").onclick = hide;
+    tip.onclick = e => { if (e.target.tagName !== "BUTTON") fab.click(); };
+    if (!closed) setTimeout(() => { showFab(); tip.classList.add("show"); setTimeout(hide, 7000); }, 15000);
+  } else if (tip) tip.remove();
+})();
 </script>
 </body>
 </html>
