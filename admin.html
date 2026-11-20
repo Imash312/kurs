@@ -39,6 +39,11 @@
     <div id="users"></div>
   </div>
   <div class="panel" id="p-lessons">
+    <form class="card" id="grp-form" style="margin-bottom:18px">
+      <h3>WhatsApp тобунун шилтемеси</h3>
+      <p class="muted small" style="margin:0 0 6px">Бул шилтемени сиз бекиткен окуучулар гана кабинетинде көрөт. Бардык сабактарга ушул топ колдонулат.</p>
+      <div class="row"><input name="g" type="url" placeholder="https://chat.whatsapp.com/…" style="flex:1;min-width:220px"><button class="btn sm" type="submit">Сактоо</button><span class="small muted" id="grp-msg"></span></div>
+    </form>
     <div class="row" style="margin-bottom:14px"><button class="btn sm" id="add" type="button">+ Жаңы сабак</button></div>
     <div id="edit"></div>
     <div id="lessons"></div>
@@ -67,7 +72,7 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
     document.querySelectorAll(".panel").forEach(p => p.classList.toggle("on", p.id === b.dataset.p));
   });
 
-  let lessons = [];
+  let lessons = [], groupLink = "";
   // Телефонду WhatsApp форматына келтирүү: 0700123456 → 996700123456
   const waNum = p => { let d = String(p || "").replace(/\D/g, ""); if (d.length === 10 && d.startsWith("0")) d = "996" + d.slice(1); else if (d.length === 9) d = "996" + d; return d.length >= 11 ? d : ""; };
 
@@ -116,10 +121,12 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
 
   async function renderLessons() {
     lessons = await API.listLessons();
+    groupLink = await API.getSetting("wa_group").catch(() => "");
+    const gf = $("grp-form"); if (gf && document.activeElement !== gf.g) gf.g.value = groupLink;
     $("lessons").innerHTML = lessons.length ? `<div class="table-wrap"><table>
       <tr><th>№</th><th>Тема</th><th>Күнү</th><th>WhatsApp</th><th>Жазуу</th><th></th></tr>
       ${lessons.map(l => `<tr><td>${l.n}</td><td><b>${esc(l.title)}</b></td><td>${fmtDate(l.starts_at)}</td>
-        <td>${safeUrl(l.zoom_url) ? "✓" : "—"}</td><td>${safeUrl(l.video_url) ? "✓" : "—"}</td>
+        <td>${safeUrl(l.zoom_url) ? "✓ өзүнчө" : safeUrl(groupLink) ? "✓" : "—"}</td><td>${safeUrl(l.video_url) ? "✓" : "—"}</td>
         <td><button class="btn ghost sm" data-e="${esc(l.id)}" type="button">Түзөтүү</button></td></tr>`).join("")}</table></div>`
       : `<div class="empty">Сабактар жок.</div>`;
     $("lessons").querySelectorAll("[data-e]").forEach(b => b.onclick = () => editor(lessons.find(l => l.id === b.dataset.e)));
@@ -135,7 +142,7 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
       </div>
       <label>Темасы</label><input name="title" value="${esc(l.title)}" required>
       <label>Кыскача мазмуну</label><input name="description" value="${esc(l.description)}">
-      <label>WhatsApp тобунун шилтемеси (сабак ушул топто видео чалуу аркылуу өтөт)</label><input name="zoom_url" type="url" value="${esc(l.zoom_url)}" placeholder="https://chat.whatsapp.com/…">
+      <label>Өзүнчө WhatsApp шилтемеси <span class="muted" style="font-weight:400">(бош калса, жалпы топ колдонулат)</span></label><input name="zoom_url" type="url" value="${esc(l.zoom_url)}" placeholder="https://chat.whatsapp.com/…">
       <label>Сабактын жазуусу (YouTube шилтемеси, жеке/unlisted)</label><input name="video_url" type="url" value="${esc(l.video_url)}" placeholder="https://youtu.be/…">
       <label>Материалдар (Google Drive папкасы ж.б.)</label><input name="materials_url" type="url" value="${esc(l.materials_url)}">
       <label>Үй тапшырмасы</label><textarea name="homework">${esc(l.homework)}</textarea>
@@ -162,6 +169,12 @@ const toLocal = iso => { if (!iso) return ""; const d = new Date(iso); d.setMinu
     };
   }
   $("add").onclick = () => editor();
+  $("grp-form").onsubmit = async e => {
+    e.preventDefault(); const v = e.target.g.value.trim();
+    if (v && !/^https:\/\/chat\.whatsapp\.com\//.test(v)) { $("grp-msg").textContent = "Шилтеме https://chat.whatsapp.com/ менен башталышы керек"; return; }
+    try { await API.setSetting("wa_group", v.replace(/\?.*$/, "")); $("grp-msg").textContent = "✓ Сакталды"; renderLessons(); }
+    catch (err) { $("grp-msg").textContent = "Ката: " + err.message; }
+  };
 
   async function renderHw() {
     const list = await API.allSubmissions();

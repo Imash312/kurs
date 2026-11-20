@@ -62,6 +62,7 @@
             zoom_url: "https://chat.whatsapp.com/", video_url: "", materials_url: "", homework: "" };
         }),
         submissions: [],
+        settings: { wa_group: "https://chat.whatsapp.com/" },
       };
       save(db);
     }
@@ -102,6 +103,8 @@
       save(db);
     },
     async deleteLesson(id) { const db = load(); db.lessons = db.lessons.filter(l => l.id !== id); save(db); },
+    async getSetting(key) { return ((load().settings) || {})[key] || ""; },
+    async setSetting(key, value) { const db = load(); db.settings = db.settings || {}; db.settings[key] = value; save(db); },
     async submitHomework(lesson_id, text, link) {
       const db = load();
       db.submissions.push({ id: uid(), lesson_id, user_id: db.session, text, link, grade: "", comment: "", created_at: new Date().toISOString() });
@@ -147,6 +150,8 @@
       await q(this.client().from("lessons").upsert(row));
     },
     async deleteLesson(id) { await q(this.client().from("lessons").delete().eq("id", id)); },
+    async getSetting(key) { const rows = await q(this.client().from("settings").select("value").eq("key", key)); return rows[0] ? rows[0].value || "" : ""; },
+    async setSetting(key, value) { await q(this.client().from("settings").upsert({ key, value })); },
     async submitHomework(lesson_id, text, link) {
       const { data: { session } } = await this.client().auth.getSession();
       await q(this.client().from("submissions").insert({ lesson_id, user_id: session.user.id, text, link }));
