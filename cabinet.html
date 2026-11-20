@@ -119,7 +119,7 @@ function gate(icon, title, text, extra) {
         </div>
         ${yt ? `<div class="video"><iframe src="${yt}" allowfullscreen loading="lazy" title="Сабактын жазуусу"></iframe></div>`
              : safeUrl(l.video_url) ? `<p><a href="${esc(l.video_url)}" target="_blank" rel="noopener">Сабактын жазуусун көрүү</a></p>` : `<p class="muted small" style="margin-top:12px">Сабактын жазуусу сабактан кийин коюлат.</p>`}
-        ${l.homework ? `<h3 style="margin-top:12px">Үй тапшырмасы</h3><p>${esc(l.homework)}</p>
+        ${l.homework ? `<h3 style="margin-top:12px">Үй тапшырмасы</h3><p style="white-space:pre-line">${esc(l.homework)}</p>
           <form class="hw" data-id="${esc(l.id)}">
             <label>Жообуңуз</label><textarea name="t" placeholder="Кыскача жазыңыз…"></textarea>
             <label>Файлдын шилтемеси (Google Drive ж.б.)</label><input name="u" type="url" placeholder="https://">
