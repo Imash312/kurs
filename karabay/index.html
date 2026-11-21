@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="ky">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>КАРАБАЙ-ЖАЗ</title>
+<link rel="icon" href="assets/flame.png">
+<style>
+:root{--bg:#fff;--ink:#0a0a0a;--panel:#f4f4f4;--panel2:#e9e9e9;--line:#d9d9d9;--mut:#6f6f6f;--untyped:#a3a3a3;--or:#f39422;--bad:#e5322d;
+ --k1:#efefef;--k2:#e3e3e3;--k3:#d6d6d6;--k4:#c8c8c8;--k5:#b9b9b9;--kmod:#f8f8f8;--kt:#111;--finger:#c4c4c4;--palm:#e4e4e4;--u:min(44px,calc((100vw - 110px)/15))}
+:root[data-theme=dark]{--bg:#000;--ink:#fff;--panel:#121212;--panel2:#1c1c1c;--line:#2b2b2b;--mut:#9a9a9a;--untyped:#5c5c5c;
+ --k1:#2a2a2a;--k2:#333;--k3:#3d3d3d;--k4:#484848;--k5:#555;--kmod:#161616;--kt:#f1f1f1;--finger:#4a4a4a;--palm:#d9d9de}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid var(--line);gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{height:46px;width:auto;display:block}
+.logo-dark{display:none!important}:root[data-theme=dark] .logo-light{display:none!important}:root[data-theme=dark] .logo-dark{display:block!important}
+.name{font-weight:800;letter-spacing:.1em;font-size:20px}.name b{color:var(--or)}
+button{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 14px;cursor:pointer}
+button:hover{border-color:var(--or)}
+button.pri{background:var(--or);color:#0a0a0a;border:0;font-weight:700}
+.hbtns{display:flex;gap:8px;align-items:center;font-size:13px;flex-wrap:wrap}
+.who{color:var(--mut);font-size:13px}
+main{max-width:980px;margin:0 auto;padding:14px 16px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.title{font-size:18px;font-weight:600}.title small{color:var(--mut);font-size:13px;display:block;font-weight:400}
+.stats{display:flex;gap:18px;align-items:center}
+.timer{font:700 22px ui-monospace,Menlo,monospace;background:var(--panel);padding:6px 14px;border-radius:10px}
+.lives{display:flex;gap:6px}.lives i{width:14px;height:14px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:block}.lives i.x{background:var(--bad);border-color:var(--bad);box-shadow:0 0 8px var(--bad)}
+.box{position:relative;background:var(--panel);border-radius:14px;margin:14px 0;padding:22px 24px;min-height:330px;max-height:56vh;overflow:auto;font:500 clamp(20px,3.4vw,30px)/1.65 ui-monospace,Menlo,Consolas,monospace}
+.line{white-space:pre-wrap;word-break:break-word}
+.c{color:var(--untyped);border-radius:3px}.c.ok{color:var(--ink)}.c.bad{background:var(--bad);color:#fff}
+.c.ent{font-size:.8em}
+.c.cur{background:var(--or);color:#0a0a0a}
+.ovw{position:sticky;top:0;height:0;z-index:5}
+.ov{position:absolute;left:-24px;right:-24px;top:-22px;height:min(56vh,100vh);min-height:330px;background:color-mix(in srgb,var(--bg) 93%,transparent);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;font:700 clamp(18px,3vw,28px)/1.3 -apple-system,"Segoe UI",sans-serif}
+.ov small{color:var(--mut);font-weight:400;font-size:15px}
+.ov img{height:52px}
+.ov.fail{background:color-mix(in srgb,var(--bad) 20%,var(--bg))}
+.ov .res{display:flex;gap:26px;margin:6px 0}.ov .res div{font-size:15px;color:var(--mut);font-weight:400}.ov .res b{display:block;font-size:30px;color:var(--ink)}
+.ov button{background:var(--or);color:#0a0a0a;border:0;font-weight:700;padding:10px 22px;margin-top:6px}
+@font-face{font-family:'NunitoK';font-weight:900;font-style:normal;font-display:swap;src:url(assets/nunito-900-cyr.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+.patient{font-family:'NunitoK','Nunito','Arial Rounded MT Bold','Trebuchet MS',sans-serif;font-weight:900;font-size:clamp(28px,6vw,50px);line-height:1.1;letter-spacing:.02em;
+ color:#ffd43b;-webkit-text-stroke:.14em #a8321f;paint-order:stroke fill;
+ text-shadow:0 .07em 0 #2b2a7a,0 .12em 0 #2b2a7a,.05em .14em 0 rgba(43,42,122,.55);
+ transform:rotate(-2deg);animation:patientpop .45s ease-in-out infinite alternate}
+@keyframes patientpop{from{transform:rotate(-2.5deg) scale(1)}to{transform:rotate(1.5deg) scale(1.05)}}
+.ov img.smashgif{height:140px;width:140px;border-radius:14px;margin-bottom:2px}
+/* 3-ката: бүт экранга чыккан эффект */
+#failFx{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(24,16,70,.88);padding:16px;text-align:center;pointer-events:none}
+#failFx.show{display:flex;animation:fxin .15s ease-out}
+#failFx img{width:min(340px,62vw);height:auto;border-radius:18px;background:#fff}
+#failFx small{color:#fff;font-size:16px;opacity:.9}
+@keyframes fxin{from{opacity:0}to{opacity:1}}
+.bar{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;min-width:120px;margin:4px 0 2px}.bar i{display:block;height:100%;background:var(--or)}
+.k.cl{color:#14161c;border-color:rgba(0,0,0,.18)}
+/* сындырган смайлик (эски эмодзи вариант) */
+.smash{position:relative;width:260px;height:130px;font-size:68px;line-height:1;margin-bottom:4px}
+.smash span{position:absolute;display:block}
+.smash .face{right:0;top:30px;animation:bob .35s ease-in-out infinite alternate}
+.smash .hammer{left:88px;top:6px;transform-origin:85% 90%;animation:hit .35s ease-in infinite alternate}
+.smash .kbd{left:0;top:56px;font-size:78px;animation:shake .35s linear infinite}
+.smash .boom{left:10px;top:6px;font-size:48px;animation:boom .35s ease-out infinite}
+@keyframes bob{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-6px) rotate(6deg)}}
+@keyframes hit{from{transform:rotate(25deg)}to{transform:rotate(-38deg)}}
+@keyframes shake{0%,100%{transform:translate(0,0) rotate(0)}30%{transform:translate(3px,3px) rotate(3deg)}60%{transform:translate(-3px,1px) rotate(-4deg)}}
+@keyframes boom{0%,40%{transform:scale(0);opacity:0}70%{transform:scale(1.2);opacity:1}100%{transform:scale(.8);opacity:.2}}
+.kb{display:flex;flex-direction:column;align-items:center;gap:5px;margin:18px auto 4px}
+.kr{display:flex;gap:5px}
+.k{height:var(--u);width:calc(var(--u)*var(--w,1) + 5px*(var(--w,1) - 1));border-radius:7px;background:var(--kmod);border:1px solid var(--line);color:var(--kt);display:flex;align-items:center;justify-content:center;font:600 calc(var(--u)*.4)/1 ui-monospace,Menlo,monospace;flex:none;text-transform:uppercase}
+.k.sp{color:var(--mut);font-size:calc(var(--u)*.26);font-weight:500;text-transform:none}
+.k.fk{height:calc(var(--u)*.6)}
+.k.gap{background:none;border:0}
+.k[data-g="1"]{background:var(--k1)}.k[data-g="2"]{background:var(--k2)}.k[data-g="3"]{background:var(--k3)}.k[data-g="4"]{background:var(--k4)}.k[data-g="5"]{background:var(--k5)}
+.k.on{background:var(--or)!important;color:#0a0a0a;border-color:var(--ink);box-shadow:0 0 0 2px var(--ink),0 0 18px var(--or);transform:translateY(-2px)}
+.hands{display:flex;justify-content:center;gap:var(--hg,70px);margin-top:8px}
+.hands svg{width:min(240px,38vw);height:auto}
+.fg{fill:var(--finger);stroke:var(--line);stroke-width:1.5;transition:fill .08s}
+.fg.on{fill:var(--or);filter:drop-shadow(0 0 7px var(--or))}
+.palm{fill:var(--palm);stroke:var(--line);stroke-width:1.5}
+.legend{text-align:center;color:var(--mut);font-size:13px;margin-top:8px;min-height:20px}.legend b{color:var(--or)}
+dialog{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;max-width:760px;width:94vw;padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:7px;margin:12px 0;max-height:56vh;overflow:auto;padding:2px}
+.grid button{padding:9px 0;font-weight:600}
+.grid button.cur{border-color:var(--or);color:var(--or)}
+.grid button.done{background:var(--ink);color:var(--bg)}
+.grid button:disabled{opacity:.3;cursor:not-allowed}
+.grid button.lock{opacity:.65}
+/* модалдар */
+.modal{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 90%,transparent);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:20px 14px;overflow:auto}
+.modal.show{display:flex}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:430px;width:100%;margin:auto}
+.card.wide{max-width:1040px}
+.card h2{margin:0 0 6px;font-size:22px}
+.card p{color:var(--mut);margin:6px 0 12px;line-height:1.5;font-size:14px}
+.tabs{display:flex;gap:6px;margin:12px 0}.tabs button{flex:1}.tabs button.on{background:var(--or);color:#0a0a0a;border:0;font-weight:700}
+input{font:inherit;width:100%;padding:11px 12px;margin:5px 0;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus{outline:2px solid var(--or);border-color:var(--or)}
+.err{color:var(--bad);font-size:14px;min-height:20px;margin:6px 0}
+.ok2{color:#2a9d57;font-size:14px;margin:6px 0}
+.logo-c{display:flex;justify-content:center;margin-bottom:6px}.logo-c img{height:80px}
+.qr{display:block;margin:10px auto;max-width:270px;width:100%;border-radius:12px;background:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.row button{flex:1}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{color:var(--mut);font-weight:600;position:sticky;top:0;background:var(--panel)}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line)}
+.badge.paid{background:var(--ink);color:var(--bg)}.badge.pend{background:var(--or);color:#0a0a0a;border-color:var(--or)}
+td button{padding:4px 9px;font-size:12px;margin:2px 3px 2px 0}
+.tw{max-height:58vh;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.cfg{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:10px 0}.cfg label{font-size:12px;color:var(--mut);display:block}.cfg input{width:200px}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="../" style="text-decoration:none;color:inherit" title="ИМРАН сайтына кайтуу">
+    <img class="logo-light" src="assets/logo-black.png" alt="logo"><img class="logo-dark" src="assets/logo-white.png" alt="logo">
+    <div class="name">КАРАБАЙ<b>-</b>ЖАЗ</div>
+  </a>
+  <div class="hbtns">
+    <span class="who" id="who"></span>
+    <button id="themeBtn" title="Ак / кара фон">◐</button>
+    <button id="menuBtn">Сабактар ▾</button>
+    <button id="adminBtn" style="display:none">Админка</button>
+    <button id="logoutBtn" style="display:none">Чыгуу</button>
+  </div>
+</header>
+<main>
+  <div class="top">
+    <div class="title" id="title"></div>
+    <div class="stats"><div class="lives" id="lives"><i></i><i></i><i></i></div><div class="timer" id="timer">00:00</div></div>
+  </div>
+  <div class="box" id="box"><div class="ovw"><div class="ov" id="ov"></div></div><div id="text"></div></div>
+  <div class="legend" id="legend"></div>
+  <div class="kb" id="kb"></div>
+  <div class="hands" id="hands"></div>
+</main>
+
+<dialog id="dlg"><div style="display:flex;justify-content:space-between;align-items:center"><b>Сабактар (100)</b><button id="closeDlg">✕</button></div><div class="grid" id="grid"></div></dialog>
+
+<!-- кирүү / катталуу -->
+<div class="modal show" id="auth"><div class="card">
+  <div class="logo-c"><img class="logo-light" src="assets/logo-black.png" alt=""><img class="logo-dark" src="assets/logo-white.png" alt=""></div>
+  <h2 style="text-align:center">КАРАБАЙ<span style="color:var(--or)">-</span>ЖАЗ</h2>
+  <p style="text-align:center" id="authSub">Сокур басууну үйрөнүү · 1–5-сабактар бекер · ИМРАН сайтынын аккаунту менен да кирсеңиз болот</p>
+  <div id="authBody">
+    <div class="tabs"><button id="tabIn" class="on">Кирүү</button><button id="tabReg">Катталуу</button></div>
+    <form id="authForm" autocomplete="on">
+      <input id="fName" placeholder="Аты-жөнүңүз" autocomplete="name" style="display:none">
+      <input id="fPhone" placeholder="Телефон номери (0700 123 456)" inputmode="tel" autocomplete="tel">
+      <input id="fPass" type="password" placeholder="Сырсөз (кеминде 6 белги)" autocomplete="current-password">
+      <div class="err" id="authErr"></div>
+      <button class="pri" id="authGo" style="width:100%;padding:11px" type="submit">Кирүү</button>
+    </form>
+  </div>
+</div></div>
+
+<!-- төлөм -->
+<div class="modal" id="pay"><div class="card">
+  <h2>Сабактарды улантуу</h2>
+  <p id="payTxt"></p>
+  <img class="qr" src="../img/qr.jpg" alt="Төлөм QR">
+  <p style="text-align:center;margin:0">QR-кодду банк тиркемеңиз менен сканерлеп төлөңүз.<br>Төлөгөндөн кийин «Төлөдүм» баскычын басыңыз — админ текшерип, сабактар ачылат.</p>
+  <div class="err" id="payErr"></div><div class="ok2" id="payOk"></div>
+  <div class="row"><button class="pri" id="payDone">Төлөдүм</button><button id="payCheck">Текшерүү</button><button id="payClose">Жабуу</button></div>
+</div></div>
+
+<!-- админка -->
+<div class="modal" id="admin"><div class="card wide">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 style="margin:0">Админка</h2><div><button id="admRefresh">Жаңыртуу</button> <button id="admClose">Жабуу</button></div></div>
+  <div class="cfg">
+    <div><label>Баасы (төлөм терезесинде көрүнөт)</label><input id="cfgPrice" placeholder="мис: 1500 сом"></div>
+    <div><label>Бекер сабактардын саны</label><input id="cfgFree" type="number" min="1" max="99" style="width:110px"></div>
+    <div><label>Бир аккаунтка түзмөк лимити</label><input id="cfgDev" type="number" min="1" max="5" style="width:110px"></div>
+    <button class="pri" id="cfgSave">Сактоо</button><span class="ok2" id="cfgOk"></span>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0"><input id="admSearch" placeholder="Издөө: аты же номер" style="max-width:260px"><select id="admSort" style="padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink)"><option value="last">Акыркы кирген боюнча</option><option value="max">Деңгээл боюнча (жогору)</option><option value="created">Жаңы катталган</option></select><span class="who" id="admStat"></span></div>
+  <div class="tw"><table><thead><tr><th>Аты</th><th>Телефон</th><th>Деңгээли (сабак)</th><th>Акыркы кирүү</th><th>Катталган</th><th>Төлөм</th><th>Түзмөк</th><th>Аракет</th></tr></thead><tbody id="admRows"></tbody></table></div>
+</div></div>
+
+<div id="failFx"><img id="failImg" alt=""><div class="patient">САБЫРДУУ БОЛУНУЗ</div><small id="failSub"></small></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/typing-api.js"></script>
+<script>
+/* ---------- жөндөөлөр ---------- */
+const ROWS_CAP=30;        // 30-сабактан кийин саптар +1 өсөт, бирок бул санга чейин гана
+const ENTER_FROM=20;      // Enter ушул сабактан баштап
+const FAIL_SOUND='assets/fail.mp3';    // 3-ката болгондо
+const LAUGH_SOUND='assets/laugh.mp3';  // 1- жана 2-ката (файл жок болсо — ичиндеги күлкү)
+
+/* ---------- маалымат ---------- */
+const LET=[...'аовлыдфжпрэ',...'кгушенцщйзхъ',...'мтсбиьчюя','.','ё'];
+const LETTERS=LET.filter(c=>/[а-яё]/.test(c));
+const CAPCH=['аовлыдфж','прэкгушен','цщйзхъмт','сбиьчюяё'].map(s=>[...s]);
+const DG=[['4','7'],['3','8'],['2','9'],['1','0'],['5','6']];
+const PLAN=[];
+for(let i=0;i<LET.length;i++){
+  PLAN.push({t:'new',learned:LET.slice(0,i+1)});
+  if(i>=3&&i%2===1&&i<=31)PLAN.push({t:'rev',learned:LET.slice(0,i+1)});
+}
+for(let j=0;j<20;j++)PLAN.push({t:'wd',j});               // 50–69
+['com','dash','quo'].forEach(k=>{PLAN.push({t:'p',k,rev:false});PLAN.push({t:'p',k,rev:true})}); // 70–75 үтүр, тире, тырмакча
+CAPCH.forEach(ch=>PLAN.push({t:'cap',ch}));              // 76–79 баш тамгалар (Shift)
+for(let j=0;j<5;j++)PLAN.push({t:'capw',j});             // 80–84
+for(let j=0;j<5;j++)PLAN.push({t:'mix',j});              // 85–89
+DG.forEach((nd,i)=>PLAN.push({t:'dnew',nd,D:DG.slice(0,i+1).flat()}));
+PLAN.push({t:'drev'});
+for(let f=0;PLAN.length<100;f++)PLAN.push({t:'fin',f});
+
+const FINGER={};const setF=(f,s)=>[...s].forEach(c=>FINGER[c]=f);
+setF('Lp','ё1йфя');setF('Lr','2цыч');setF('Lm','3увс');setF('Li','45кеапми');
+setF('Ri','67нгроть');setF('Rm','8шлб');setF('Rr','9щдю');setF('Rp','0зхъжэ.');
+FINGER[' ']='T';FINGER['\n']='Rp';FINGER.SL='Lp';FINGER.SR='Rp';
+FINGER['-']='Rp';FINGER['=']='Rp';FINGER[',']='Rp';FINGER['"']='Lr';
+const SHIFTED={',':'.','"':'2'};   // Shift менен басылуучу белгилер → кайсы баскыч
+const GRP={p:1,r:2,m:3,i:4,T:5};
+/* ар бир бармактын өз түсү (сол жана оң колдун бардык манжалары ар башка) */
+const FCOL={Lp:'#f7a8c4',Lr:'#b9a4f0',Lm:'#8ecdf5',Li:'#9fe0a8',Ri:'#f1e17c',Rm:'#8fe0d2',Rr:'#f3b6e6',Rp:'#f7a79f',T:'#d3d3d3'};
+const FNAME={Lp:'сол кол кичи манжа',Lr:'сол кол аты жок манжа',Lm:'сол кол орто манжа',Li:'сол кол сөөмөй',Ri:'оң кол сөөмөй',Rm:'оң кол орто манжа',Rr:'оң кол аты жок манжа',Rp:'оң кол кичи манжа',T:'бармак'};
+const CODE={KeyQ:'й',KeyW:'ц',KeyE:'у',KeyR:'к',KeyT:'е',KeyY:'н',KeyU:'г',KeyI:'ш',KeyO:'щ',KeyP:'з',BracketLeft:'х',BracketRight:'ъ',KeyA:'ф',KeyS:'ы',KeyD:'в',KeyF:'а',KeyG:'п',KeyH:'р',KeyJ:'о',KeyK:'л',KeyL:'д',Semicolon:'ж',Quote:'э',KeyZ:'я',KeyX:'ч',KeyC:'с',KeyV:'м',KeyB:'и',KeyN:'т',KeyM:'ь',Comma:'б',Period:'ю',Slash:'.',Backquote:'ё',Minus:'-',Digit1:'1',Digit2:'2',Digit3:'3',Digit4:'4',Digit5:'5',Digit6:'6',Digit7:'7',Digit8:'8',Digit9:'9',Digit0:'0',Space:' ',Enter:'\n',NumpadEnter:'\n'};
+const bad=/[өүң]/;
+const WORDS=`ата апа ака эже ини бала кыз жигит эне дос сабак мектеп китеп калем дептер окуу жазуу тил жол тоо суу там эл жер ай жылдыз булут шамал жамгыр кар жаз жай кыш ат уй кой эчки жылкы тоок ит мышык бээ тай бука аюу арстан жолборс сабиз алма алмурут коон дарбыз нан чай эт май туз шекер тамак аш казан чыны табак кашык пияз картошка жашоо адам мал чабан дыйкан мугалим шаар айыл талаа токой дарыя терек чынар бак бугу коён чычкан ал ол ар ыр ада ала жар жара пар пал арпа арал дал ордо дары ары жок бар жакшы жаман бир эки уч беш алты жети сегиз тогуз он келди кетти барды жатты турду жазды окуду айтты берди алды сатты бышты кыргыз калк мамлекет китепкана класс окуучу окутуучу комуз манас бешбармак боорсок кымыз жоолук калпак ылдый бийик кыска узун тар жылуу муздак тез абдан куш балык жылан кол бут баш кулак мурун ооз тиш чач жалал парда лампа фара ажал базар парк машина доска`.split(/\s+/).filter(w=>w&&!bad.test(w));
+const NAMES=`Айбек Бакыт Азамат Нурлан Эркин Эрлан Адилет Бермет Айдай Алтынай Самат Тилек Мээрим Каныкей Чолпон Асан Улан Данияр Руслан Айдар Бекзат Кубаныч Мирлан Айгерим Нурбек Жылдыз Салтанат Эмир Бишкек Ош Талас Нарын Баткен Токмок Каракол Кант`.split(/\s+/).filter(w=>!bad.test(w));
+const SENT=['ата апа менен бала мектепке барат.','мен китеп окуймун жана жазам.','тоо бийик жана дарыя тайыз агат.','алма жана алмурут абдан таттуу.','кыргыз эли тоолуу жерде жашайт.','жамгыр жаады жана шамал согот.','биз сабак окуп жатабыз.','бала мектептен кайтты.','апа нан бышырды ата чай ичти.','жылдыз булут менен жаркырайт.','кой жайытта жайылып жатат.','куш асманда учуп барат.','бишкек кыргызстандын борбору.','окуучулар класста сабак окушат.','дарыя тоодон агып келет.','жаз келди жана кар эрий баштады.','апам кечинде таттуу тамак бышырат.','аял менен эркек базарга барышты.','чабан койлорду тоого айдап барды.','балдар паркта ойношту.','сиз кыргыз тилин жакшы билесиз.','жаш жигит машина айдап жатат.','китепкана шаардын борборунда жайгашкан.'].filter(s=>!bad.test(s));
+
+/* тыныш белгилери бар сүйлөмдөр (70-сабактан кийин) */
+const SENT_COM=['ата, апа, бала мектепке барышты.','алма, алмурут, дарбыз жана коон таттуу.','жаз келди, кар эрий баштады.','мен окуймун, ал жазат.','тоо бийик, дарыя узун.','бала келди, апа кубанды.','ата чай ичти, апа нан бышырды.','жамгыр жаады, шамал согуп жатты.','китеп, калем жана дептер алдым.','чабан, дыйкан жана мугалим жашайт.','биз барабыз, алар калышты.','кой, эчки, жылкы жайытта.','куш учат, балык сууда жатат.','ал барды, мен калдым.'].filter(s=>!bad.test(s));
+const SENT_DASH=['бишкек - кыргызстандын борбору.','мен - окуучумун.','ал - мугалим.','алма - таттуу жемиш.','жер-суу - биздин байлык.','ата - чабан, апа - мугалим.','ата-эне - эң жакын адамдар.','аш-тамак даяр.','дос-жолдош менен барабыз.'].filter(s=>!bad.test(s));
+const SENT_QUO=['ал "жакшы" деди.','ата "келдим" деди.','апа "кел" деди.','бала "барам" деди.','мугалим "окугула" деди.','ал "рахмат" деп айтты.','китеп "манас" деп аталат.','мен "жакшы" деп жооп бердим.','биз "рахмат" дедик.'].filter(s=>!bad.test(s));
+const DASHW=['ата-эне','жер-суу','аш-тамак','дос-жолдош','кыз-жигит','тоо-таш','эл-жер','ата-баба','бала-бакыра','кой-эчки'].filter(s=>!bad.test(s));
+const SENTP=[...SENT,...SENT_COM,...SENT_DASH,...SENT_QUO];
+
+/* ---------- сабак генератору ---------- */
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const isLetter=c=>/[а-яё]/.test(c);
+const U=c=>c.toUpperCase(),cap=w=>U(w[0])+w.slice(1);
+const wordsFor=set=>WORDS.filter(w=>[...w].every(c=>set.has(c)));
+function mk(n){
+  const P=PLAN[n-1],r=mulberry(n*7919+13),pick=a=>a[Math.floor(r()*a.length)];
+  const rep=(t,c)=>Array(c).fill(t);
+  const many=(f,c)=>[...Array(c)].map(f);
+  const syl=(pool,must)=>{const len=2+Math.floor(r()*2);const s=many(()=>pick(pool),len);if(must)s[Math.floor(r()*len)]=must;return s.join('')};
+  const num=(pool,must)=>{const len=2+Math.floor(r()*3);const s=many(()=>pick(pool),len);if(must)s[Math.floor(r()*len)]=must;return s.join('')};
+  const fit=(toks,max)=>{let s='';for(const t of toks){const nx=s?s+' '+t:t;if(nx.length>max&&s)break;s=nx}return s};
+  const ALL=new Set(LET),Wall=wordsFor(ALL);
+  const ss=[...(n>=70?SENTP:SENT)].sort(()=>r()-.5);let si=0;
+  const sent=()=>ss[si++%ss.length],lowS=()=>[sent()],capS=()=>[cap(sent())];
+  const lw=(c=7)=>many(()=>pick(Wall),c),cw=(c=6)=>many(()=>cap(pick(Wall)),c),cn=(c=6)=>many(()=>pick(NAMES),c);
+  const DIGALL=DG.flat();
+  const wnc=(D)=>{const t=[];for(let i=0;i<4;i++)t.push(pick(Wall),num(D,pick(D)));return t};
+  const pc=(c=7)=>many(()=>pick(Wall)+',',c),pd=(c=6)=>many(()=>pick(DASHW),c),pq=(c=6)=>many(()=>'"'+pick(Wall)+'"',c);
+  const pickS=a=>[pick(a)];
+  let rows=[],title='',sub='',extra=()=>[];
+  if(P.t==='new'||P.t==='rev'){
+    const learned=P.learned,set=new Set(learned),k=learned[learned.length-1];
+    const letters=learned.filter(isLetter),wk=wordsFor(set);
+    const wordsRow=(c=8,must)=>{let w=wk;if(must){const m=wk.filter(x=>x.includes(must));if(m.length>=2)w=m}return w.length>=2?many(()=>pick(w),c):many(()=>syl(letters,must),c)};
+    if(P.t==='new'){
+      const isDot=k==='.',kn=isDot?'чекит (.)':k;
+      title=`Жаңы белги: «${kn}»`;sub=`${FNAME[FINGER[k]]} менен басыла`;
+      rows.push(rep(k,11));
+      if(isDot){
+        const x1=letters[letters.length-1],x2=pick(letters),x3=pick(letters);
+        rows.push(rep(x1+'.',14),rep(x2+'.',14),rep(x3+'.',14),many(()=>syl(letters)+'.',8));
+        extra=i=>many(()=>pick(wk.length?wk:[syl(letters)])+'.',8);
+      }else{
+        const p=letters.filter(c=>c!==k);
+        if(p.length){
+          const x1=p[p.length-1],x2=pick(p);
+          rows.push(rep(k+x1,12),rep(x1+k,12),rep(k+x2,12),rep(x2+k,12),many(()=>syl(letters,k),10),wordsRow(8,k));
+        }else rows.push(rep(k,11),rep(k,11),rep(k,11),rep(k,11));
+        extra=i=>i%3===1?many(()=>syl(letters,k),10):wordsRow(8,i%3===2?k:null);
+      }
+    }else{
+      const recent=letters.slice(-4);
+      title=`Бышыктоо: ${recent.join(' ')}`;sub='жаңы тамгаларды мурункулар менен аралаштыруу';
+      const rs=()=>many(()=>syl(recent),10),al=()=>many(()=>syl(letters,pick(recent)),10);
+      rows.push(rs(),al(),wordsRow(8,pick(recent)),wordsRow(8),rs(),wordsRow(8,pick(recent)));
+      extra=i=>i%3===0?wordsRow(8,pick(recent)):i%3===1?al():wordsRow(8);
+    }
+  }else if(P.t==='wd'){
+    const j=P.j;
+    if(j<10){
+      const focus=LETTERS.slice(j*3,j*3+4);
+      title='Сөз машыгуусу';sub=`басым: ${focus.join(' ')}`;
+      extra=i=>{const m=i%4;if(m===1){const w=Wall.filter(x=>focus.some(f=>x.includes(f)));return many(()=>pick(w.length>2?w:Wall),7)}if(m===2)return many(()=>syl(LETTERS,pick(focus)),10);return lw()};
+    }else{
+      title='Сүйлөм машыгуусу';sub='сөздөр жана сүйлөмдөр';
+      extra=i=>i%3===1?lowS():lw();
+    }
+  }else if(P.t==='p'){
+    // 70–75: үтүр (,) · тире (-) · тырмакча (")
+    const k=P.k,rev=P.rev;
+    const S={com:SENT_COM,dash:SENT_DASH,quo:SENT_QUO}[k];
+    const tok={com:',',dash:'-',quo:'"'}[k];
+    const nm={com:'Үтүр ( , )',dash:'Тире ( - )',quo:'Тырмакча ( " )'}[k];
+    const how={com:'Shift (сол кичи манжа) + чекит баскычы (оң кичи манжа)',dash:'«-» баскычы (0 цифрасынын оң жагында) · оң кичи манжа',quo:'Shift (оң кичи манжа) + 2 (сол аты жок манжа)'}[k];
+    const word={com:()=>pc(7),dash:()=>pd(6),quo:()=>pq(6)}[k];
+    const small={com:()=>many(()=>pick(LETTERS)+',',10),dash:()=>many(()=>pick(LETTERS)+'-'+pick(LETTERS),9),quo:()=>many(()=>'"'+pick(LETTERS)+'"',9)}[k];
+    if(!rev){
+      title=`Жаңы белги: ${nm}`;sub=how;
+      rows.push(rep(tok,11),small(),small(),word(),word(),pickS(S),lw());
+      extra=i=>i%3===0?word():i%3===1?pickS(S):small();
+    }else{
+      title=`Бышыктоо: ${nm}`;sub='сөздөр жана сүйлөмдөр менен аралаш';
+      const prev=k==='com'?[SENT_COM]:k==='dash'?[SENT_COM,SENT_DASH]:[SENT_COM,SENT_DASH,SENT_QUO];
+      const ps=()=>pickS(S);
+      rows.push(word(),ps(),lw(),ps(),word(),ps(),pickS(pick(prev)));
+      extra=i=>i%4===0?word():i%4===1?ps():i%4===2?lw():pickS(pick(prev));
+    }
+  }else if(P.t==='cap'){
+    // 76–79: баш тамгалар (Shift) — аз кылынды
+    const chs=P.ch,cs=c=>U(c)+syl(LETTERS),wf=Wall.filter(w=>chs.includes(w[0]));
+    const wfRow=()=>wf.length>=2?many(()=>cap(pick(wf)),7):many(()=>cs(pick(chs)),8);
+    title=`Баш тамгалар: ${chs.map(U).join(' ')}`;
+    sub='Shift + тамга · сол кол тамгасына оң Shift, оң кол тамгасына сол Shift (кичи манжа)';
+    for(let i=0;i<chs.length;i+=2)rows.push(many((_,j)=>U(chs[i+(j%2)]||chs[i]),12));
+    rows.push(many(()=>cs(pick(chs)),8),wfRow());
+    extra=i=>i%3===0?wfRow():i%3===1?lw():many(()=>cs(pick(chs)),8);
+  }else if(P.t==='capw'){
+    // 80–84: сөздүн баш тамгасы (көбү кичине тамга, аз гана баш тамга)
+    title='Баш тамга менен жазуу';sub='аттар жана сүйлөмдүн башы — Shift менен';
+    const pat=['lw','cs','lw','cn','lw','cw','lw','cs'];
+    extra=i=>{const t=pat[i%pat.length];return t==='cw'?cw(4):t==='cn'?cn(5):t==='cs'?capS():lw()};
+  }else if(P.t==='mix'){
+    // 85–89: бардык тыныш белгилери аралаш
+    title='Сүйлөмдөр жана тыныш белгилери';sub='үтүр, тире, тырмакча, баш тамга';
+    const pat=['sp','lw','pc','sp','pd','lw','sp','pq'];
+    extra=i=>{const t=pat[i%pat.length];return t==='sp'?[cap(pick(SENTP))]:t==='pc'?pc():t==='pd'?pd():t==='pq'?pq():lw()};
+  }else if(P.t==='dnew'||P.t==='drev'){
+    const D=P.t==='dnew'?P.D:DIGALL;
+    const numRow=m=>many(()=>num(D,m),10);
+    if(P.t==='dnew'){
+      const [a,b]=P.nd;
+      title=`Жаңы сандар: «${a}» жана «${b}»`;sub=`${FNAME[FINGER[a]]} (${a}) · ${FNAME[FINGER[b]]} (${b})`;
+      const p=D.filter(c=>!P.nd.includes(c)),x1=p.length?p[p.length-1]:a,x2=p.length?pick(p):b;
+      rows.push(rep(a,11),rep(b,11),rep(a+b,12),rep(b+a,12),rep(a+x1,12),rep(x2+b,12),numRow(pick(P.nd)),numRow(pick(P.nd)),wnc(D));
+      extra=i=>i%2?wnc(D):numRow(pick(P.nd));
+    }else{
+      title='Сандар: бышыктоо';sub='1 2 3 4 5 6 7 8 9 0 — бардыгы';
+      rows.push(numRow(),numRow(),wnc(D),numRow(),wnc(D),numRow(),wnc(D));
+      extra=i=>i%2?wnc(D):numRow(pick(D));
+    }
+  }else{
+    const f=P.f;
+    title=`Жыйынтык сабак ${f+1}/5`;sub='баш тамга, сан жана сүйлөмдөр аралаш';
+    const pat=['sp','lw','m','d','lw','sp','pc','lw'];
+    extra=i=>{const t=pat[i%pat.length];return t==='sp'?[cap(pick(SENTP))]:t==='lw'?lw():t==='pc'?pc():t==='m'?wnc(DIGALL):many(()=>num(DIGALL),9)};
+  }
+  const base=rows.length;
+  const target=n>=30?Math.max(base,Math.min(ROWS_CAP,7+n-30)):base;
+  for(let i=0;rows.length<target;i++)rows.push(extra(i));
+  const end=n>=ENTER_FROM?'\n':' ';
+  let lines=rows.map(t=>fit(t,(t.length===1&&t[0].length>44)?200:44)+end);
+  if(n<ENTER_FROM)lines[lines.length-1]=lines[lines.length-1].trimEnd();
+  if(n===ENTER_FROM)sub+=' · ЖАҢЫ: Enter (↵) — ар сап акырында, оң кичи манжа менен';
+  return{lines,title,sub,n};
+}
+
+/* ---------- үн ---------- */
+let laughA=null,laughOK=true,failA=null,ac=null,stopT=null;
+try{laughA=new Audio(LAUGH_SOUND);laughA.addEventListener('error',()=>{laughOK=false})}catch(e){laughOK=false}
+try{failA=new Audio(FAIL_SOUND);failA.preload='auto'}catch(e){}
+function synth(){
+  try{
+    ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();
+    const t=ac.currentTime,m=ac.createGain();m.gain.value=.4;m.connect(ac.destination);
+    for(let i=0;i<8;i++){
+      const st=t+i*.115,o=ac.createOscillator(),fl=ac.createBiquadFilter(),g=ac.createGain();
+      o.type='sawtooth';fl.type='bandpass';fl.Q.value=3;
+      const base=560+(i%2?70:0)-i*16;
+      o.frequency.setValueAtTime(base*1.3,st);o.frequency.exponentialRampToValueAtTime(base,st+.09);
+      fl.frequency.setValueAtTime(1300,st);fl.frequency.linearRampToValueAtTime(750,st+.09);
+      g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(1,st+.015);g.gain.exponentialRampToValueAtTime(.001,st+.105);
+      o.connect(fl);fl.connect(g);g.connect(m);o.start(st);o.stop(st+.11);
+    }
+  }catch(e){}
+}
+function laugh(){
+  if(laughA&&laughOK){try{laughA.currentTime=0;const p=laughA.play();if(p&&p.catch)p.catch(()=>{laughOK=false;synth()});clearTimeout(stopT);stopT=setTimeout(()=>laughA.pause(),1000);return}catch(e){}}
+  synth();
+}
+function playFail(){try{failA.currentTime=0;const p=failA.play();if(p&&p.catch)p.catch(()=>synth())}catch(e){synth()}}
+
+/* ---------- тема ---------- */
+function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('karabay.theme',t)}catch(e){}}
+(function(){let t=null;try{t=localStorage.getItem('karabay.theme')}catch(e){}
+  if(!t)t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})();
+
+/* ---------- сервер (API) ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let token=null;
+let user=null,cfg={free:5,price:'',devices:2};
+function deviceId(){
+  let d=null;try{d=localStorage.getItem('karabay.device')}catch(e){}
+  if(!d){d=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)).replace(/[^\w-]/g,'');try{localStorage.setItem('karabay.device',d)}catch(e){}}
+  return d;
+}
+const setToken=t=>{token=t};
+/* Сайттын аккаунттары (js/api.js) жана тренажёрдун маалыматы (js/typing-api.js) менен иштеген катмар */
+async function api(path,b){
+  try{return await backend(path,b||{})}
+  catch(e){
+    if(e&&e.status===401&&path!=='login'&&path!=='register'){
+      setToken(null);try{await API.signOut()}catch(_){}
+      showAuth();$('authErr').textContent=e.kicked?'Аккаунтуңузга башка түзмөктөн кирилди. Кайра кириңиз.':'Сессия бүттү. Кайра кириңиз.';
+    }
+    throw e;
+  }
+}
+async function backend(path,b){
+  const dev=deviceId();
+  switch(path){
+    case 'config': return await TYPING.cfg();
+    case 'register': case 'login':{
+      if(path==='register'){
+        if(String(b.name||'').trim().length<2)throw new Error('Аты-жөнүңүздү жазыңыз');
+        if(String(b.password||'').length<6)throw new Error('Сырсөз кеминде 6 белгиден турушу керек');
+        await API.signUp({email:'',password:b.password,full_name:String(b.name).trim(),phone:String(b.phone||'').trim()});
+      }else await API.signIn(String(b.phone||'').trim(),b.password);
+      try{const r=await TYPING.claim(dev);return{token:'sb',user:r.user,config:r.config}}
+      catch(e){try{await API.signOut()}catch(_){}throw e}
+    }
+    case 'enter': return await TYPING.claim(dev);
+    case 'me':{if(!(await API.me()))throw Object.assign(new Error('Кирүү керек'),{status:401});return await TYPING.ping(dev)}
+    case 'progress': return {user:await TYPING.progress(b.max,dev)};
+    case 'pay': return {user:await TYPING.payRequest(dev)};
+    case 'logout': await API.signOut(); return {};
+    case 'admin/users': return await TYPING.admin.list();
+    case 'admin/paid': await TYPING.admin.setPaid(b.id,b.paid); return {};
+    case 'admin/reset': await TYPING.admin.setMax(b.id,1); return {};
+    case 'admin/setmax': await TYPING.admin.setMax(b.id,b.max); return {};
+    case 'admin/devices': await TYPING.admin.resetDevices(b.id); return {};
+    case 'admin/delete': await TYPING.admin.remove(b.id); return {};
+    case 'admin/setpass': await API.setPassword(b.id,b.password); return {};
+    case 'admin/setphone': await TYPING.admin.setPhone(b.id,b.phone); return {};
+    case 'admin/config': await TYPING.admin.config(b); return {config:b};
+  }
+  throw new Error('Белгисиз сурам: '+path);
+}
+const isAdmin=()=>user&&user.role==='admin';
+const needPay=n=>!isAdmin()&&n>cfg.free&&!user.paid;
+const canOpen=n=>isAdmin()||n<=user.max;
+
+/* ---------- UI ---------- */
+let cur=1,L,text,pos,errors,correct,state='none',t0,timer,spans=[],failT=null;
+
+const keyEls={};
+const kb=$('kb');
+const KD=(l,w,id,fk)=>({l,w,id,fk});
+const KB=[
+ [KD('Esc',1,null,1),{gap:1},...['F1','F2','F3','F4'].map(x=>KD(x,1,null,1)),{gap:.5},...['F5','F6','F7','F8'].map(x=>KD(x,1,null,1)),{gap:.5},...['F9','F10','F11','F12'].map(x=>KD(x,1,null,1))],
+ [...'ё1234567890-=',KD('Backspace',2)],
+ [KD('Tab',1.5),...'йцукенгшщзхъ',KD('\\',1.5)],
+ [KD('Caps Lock',1.75),...'фывапролджэ',KD('Enter ↵',2.25,'\n')],
+ [KD('Shift',2.25,'SL'),...'ячсмитьбю.',KD('Shift',2.75,'SR')],
+ [KD('Ctrl',1.25),KD('Win',1.25),KD('Alt',1.25),KD('',6.25,' '),KD('Alt',1.25),KD('Win',1.25),KD('Menu',1.25),KD('Ctrl',1.25)]
+];
+KB.forEach(r=>{
+  const d=document.createElement('div');d.className='kr';
+  r.forEach(k=>{
+    const e=document.createElement('div');e.className='k';
+    if(typeof k==='string'){e.textContent=k;keyEls[k]=e;const f=FINGER[k];if(f){e.style.background=FCOL[f];e.classList.add('cl')}}
+    else if(k.gap){e.classList.add('gap');e.style.setProperty('--w',k.gap)}
+    else{
+      e.style.setProperty('--w',k.w);e.classList.add('sp');e.textContent=k.l;if(k.fk)e.classList.add('fk');
+      if(k.id){keyEls[k.id]=e;if(FINGER[k.id]){e.style.background=FCOL[FINGER[k.id]];e.classList.add('cl')}}
+    }
+    d.appendChild(e);
+  });
+  kb.appendChild(d);
+});
+
+/* колдор — биринчи жасалган дизайн */
+function hand(side){
+  const F=side==='L'?{p:'Lp',r:'Lr',m:'Lm',i:'Li'}:{p:'Rp',r:'Rr',m:'Rm',i:'Ri'};
+  const mir=side==='R'?'transform="translate(200,0) scale(-1,1)"':'';
+  return `<svg viewBox="0 0 200 165"><g ${mir}>
+  <rect class="fg" data-f="${F.p}" x="16" y="62" width="26" height="62" rx="13"/>
+  <rect class="fg" data-f="${F.r}" x="48" y="38" width="28" height="86" rx="14"/>
+  <rect class="fg" data-f="${F.m}" x="82" y="26" width="28" height="98" rx="14"/>
+  <rect class="fg" data-f="${F.i}" x="116" y="38" width="28" height="86" rx="14"/>
+  <rect class="fg" data-f="T" x="146" y="104" width="28" height="54" rx="14" transform="rotate(38 160 110)"/>
+  <rect class="palm" x="14" y="92" width="136" height="66" rx="30"/>
+  </g></svg>`;
+}
+$('hands').innerHTML=hand('L')+hand('R');
+function setHL(ch){
+  document.querySelectorAll('.k.on').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.fg.on').forEach(e=>e.classList.remove('on'));
+  if(ch==null){$('legend').innerHTML='';return}
+  const lower=ch.toLowerCase();
+  const base=(lower!==ch&&isLetter(lower))?lower:(SHIFTED[ch]||ch),up=base!==ch;
+  const f=FINGER[base],fingers=[f];
+  if(keyEls[base])keyEls[base].classList.add('on');
+  let leg=`<b>${ch===' '?'Пробел':ch==='\n'?'Enter ↵':ch}</b> → ${FNAME[f]}`;
+  if(up){
+    const left=f[0]==='L';fingers.push(left?'Rp':'Lp');
+    keyEls[left?'SR':'SL'].classList.add('on');
+    leg=`<b>Shift</b> (${left?'оң':'сол'} кичи манжа) + <b>${base}</b> (${FNAME[f]}) → <b>${ch}</b>`;
+  }
+  fingers.forEach(x=>document.querySelectorAll(`.fg[data-f="${x}"]`).forEach(e=>e.classList.add('on')));
+  $('legend').innerHTML=leg;
+}
+
+/* сабак */
+function load(n){
+  clearTimeout(failT);$('failFx').classList.remove('show');
+  cur=n;L=mk(n);text=L.lines.join('');pos=0;errors=0;correct=0;state='idle';clearInterval(timer);
+  $('title').innerHTML=`Сабак ${n}/100 · ${L.title}<small>${L.sub}</small>`;
+  $('timer').textContent='00:00';drawLives();
+  const t=$('text');t.innerHTML='';spans=[];
+  L.lines.forEach(l=>{const d=document.createElement('div');d.className='line';[...l].forEach(c=>{const s=document.createElement('span');s.className='c';if(c==='\n'){s.textContent='↵';s.classList.add('ent')}else s.textContent=c;d.appendChild(s);spans.push(s)});t.appendChild(d)});
+  $('box').scrollTop=0;spans[0].classList.add('cur');
+  setHL(text[0]);
+  ov(`<div>Пробел — СТАРТ</div><small>Esc — кайра баштоо · 3 ката болсо сабак кайра башталат</small>`);
+}
+function go(n){ if(needPay(n)){showPay();return} load(n) }
+function ov(h,c=''){const o=$('ov');o.className='ov '+c;o.innerHTML=h;o.parentElement.style.display=h?'block':'none'}
+function drawLives(){[...$('lives').children].forEach((e,i)=>e.className=i<errors?'x':'')}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0')}
+function start(){state='run';ov('');t0=Date.now();timer=setInterval(()=>{$('timer').textContent=fmt((Date.now()-t0)/1000)},200)}
+function press(ch){
+  if(ch===text[pos]){
+    spans[pos].className='c ok'+(ch==='\n'?' ent':'');pos++;correct++;
+    if(pos>=text.length){finish();return}
+    spans[pos].classList.add('cur');setHL(text[pos]);
+    const s=spans[pos],b=$('box');if(s.offsetTop>b.scrollTop+b.clientHeight-70)b.scrollTop=s.offsetTop-60;
+  }else{
+    errors++;drawLives();spans[pos].classList.add('bad');
+    setTimeout(()=>{if(spans[pos]&&state==='run')spans[pos].classList.remove('bad')},220);
+    if(errors>=3){playFail();fail()}else laugh();
+  }
+}
+function fail(){
+  state='fail';clearInterval(timer);
+  ov('');
+  $('failImg').src='assets/smash.gif?'+Date.now();
+  $('failSub').textContent=`3 ката кетти · сабак ${cur} кайрадан башталат…`;
+  $('failFx').classList.add('show');
+  failT=setTimeout(()=>load(cur),3200);
+}
+async function finish(){
+  state='done';clearInterval(timer);setHL(null);
+  const sec=(Date.now()-t0)/1000,wpm=Math.round(text.length/5/(sec/60)),acc=Math.round(100*correct/(correct+errors));
+  const last=cur===100,nextLocked=!last&&needPay(cur+1);
+  ov(`<img src="assets/flame.png" alt=""><div>${last?'100 сабак бүттү!':'Сабак '+cur+' өттү!'}</div>
+  <div class="res"><div><b>${fmt(sec)}</b>убакыт</div><div><b>${wpm}</b>тамга/5 мүн.</div><div><b>${acc}%</b>тактык</div><div><b>${errors}</b>ката</div></div>
+  ${last?'':`<button id="nextBtn">Сабак ${cur+1} ▶ (Пробел)</button>`}`);
+  const b=$('nextBtn');if(b)b.onclick=()=>go(cur+1);
+  if(!last&&cur+1>user.max){try{const r=await api('progress',{max:cur+1});user=r.user}catch(e){}}
+}
+document.addEventListener('keydown',e=>{
+  if(!user||$('dlg').open||document.querySelector('.modal.show'))return;
+  if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  if(e.code==='Escape'){load(cur);return}
+  if(state==='done'){if((e.code==='Space'||e.code==='Enter')&&cur<100){e.preventDefault();go(cur+1)}return}
+  if(state==='fail'||state==='none')return;
+  if(e.code==='Space'||e.code==='Enter')e.preventDefault();
+  let ch=CODE[e.code];if(!ch||e.repeat)return;
+  if(e.shiftKey){if(isLetter(ch))ch=ch.toUpperCase();else if(e.code==='Slash')ch=',';else if(e.code==='Digit2')ch='"'}
+  if(ch==='\n'&&cur<ENTER_FROM)return;
+  if(state==='idle'){if(e.code==='Space')start();return}
+  if(state==='run')press(ch);
+});
+
+/* меню */
+const dlg=$('dlg');
+function buildGrid(){
+  const g=$('grid');g.innerHTML='';
+  for(let n=1;n<=100;n++){
+    const b=document.createElement('button');
+    const locked=!isAdmin()&&n<=user.max&&needPay(n);
+    b.textContent=locked?'🔒'+n:n;
+    if(n<user.max&&!locked)b.classList.add('done');if(n===cur)b.classList.add('cur');
+    if(locked){b.classList.add('lock');b.onclick=()=>{dlg.close();showPay()}}
+    else{b.disabled=!canOpen(n);b.onclick=()=>{dlg.close();load(n)}}
+    g.appendChild(b);
+  }
+}
+$('menuBtn').onclick=()=>{if(!user)return;buildGrid();dlg.showModal()};
+$('closeDlg').onclick=()=>dlg.close();
+$('themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+
+/* ---------- кирүү / катталуу ---------- */
+let mode='in';
+function setMode(m){
+  mode=m;$('tabIn').classList.toggle('on',m==='in');$('tabReg').classList.toggle('on',m==='reg');
+  $('fName').style.display=m==='reg'?'block':'none';$('authGo').textContent=m==='reg'?'Катталуу':'Кирүү';
+  $('fPass').autocomplete=m==='reg'?'new-password':'current-password';$('authErr').textContent='';
+}
+$('tabIn').onclick=()=>setMode('in');$('tabReg').onclick=()=>setMode('reg');
+$('authForm').onsubmit=async ev=>{
+  ev.preventDefault();$('authErr').textContent='';
+  try{
+    const body={phone:$('fPhone').value,password:$('fPass').value,device:deviceId()};
+    if(mode==='reg')body.name=$('fName').value;
+    const r=await api(mode==='reg'?'register':'login',body);
+    setToken(r.token);user=r.user;$('fPass').value='';enter();
+  }catch(e){$('authErr').textContent=e.message==='Failed to fetch'?'Сервер менен байланыш жок':e.message}
+};
+function showAuth(){state='none';user=null;clearInterval(timer);clearTimeout(failT);$('failFx').classList.remove('show');$('pay').classList.remove('show');$('admin').classList.remove('show');$('auth').classList.add('show');$('who').textContent='';$('logoutBtn').style.display=$('adminBtn').style.display='none';$('title').textContent='';ov('')}
+function enter(){
+  if(!window._chk)window._chk=setInterval(()=>{if(user&&token)api('me').then(r=>{user=r.user}).catch(()=>{})},60000);
+  $('auth').classList.remove('show');
+  $('who').textContent=user.name;$('logoutBtn').style.display='';$('adminBtn').style.display=isAdmin()?'':'none';
+  let s=Math.min(user.max,100);
+  if(needPay(s)){load(cfg.free);showPay()}else load(s);
+}
+$('logoutBtn').onclick=async()=>{try{await api('logout',{})}catch(e){}setToken(null);showAuth();setMode('in')};
+
+/* ---------- төлөм ---------- */
+function payRender(){
+  const t=[`1–${cfg.free}-сабактар бекер болчу. Калган сабактарды улантуу үчүн төлөм керек.`];
+  const price=cfg.price||((K.C.PRICE_TYPING||'')+' сом');t.push(`<b>Баасы: ${esc(price)}</b> · ${esc(K.C.PAY_BANK||'')} · ${esc(K.C.PAY_NAME||'')} · ${esc(K.C.PAY_PHONE||'')}`);
+  if(user.pending)t.push('<b style="color:var(--or)">Өтүнүчүңүз жөнөтүлдү — админдин тастыктоосун күтүңүз.</b>');
+  $('payTxt').innerHTML=t.join('<br>');
+  $('payDone').style.display=user.pending?'none':'';
+}
+async function showPay(){
+  $('payErr').textContent=$('payOk').textContent='';
+  $('pay').classList.add('show');
+  await payCheck(true);
+}
+async function payCheck(silent){
+  try{const r=await api('me');user=r.user;cfg=r.config}catch(e){}
+  if(user.paid||isAdmin()){$('pay').classList.remove('show');return}
+  payRender();
+  if(!silent)$('payOk').textContent=user.pending?'Азырынча тастыктала элек.':'';
+}
+$('payCheck').onclick=async()=>{await payCheck(false);if(!$('pay').classList.contains('show')&&state==='done')go(cur+1)};
+$('payDone').onclick=async()=>{try{const r=await api('pay',{});user=r.user;payRender();$('payOk').textContent='Өтүнүч жөнөтүлдү. Админ текшергенде сабактар ачылат.'}catch(e){$('payErr').textContent=e.message}};
+$('payClose').onclick=()=>$('pay').classList.remove('show');
+
+/* ---------- админка ---------- */
+let admUsers=[];
+const fd=t=>t?new Date(t*1000).toLocaleString('ru-RU',{dateStyle:'short',timeStyle:'short'}):'—';
+async function admLoad(){
+  try{
+    const d=await api('admin/users');admUsers=d.users;
+    $('cfgPrice').value=d.config.price||'';$('cfgFree').value=d.config.free;$('cfgDev').value=d.config.devices||2;
+    admRender();
+  }catch(e){$('admStat').textContent=e.message}
+}
+function admRender(){
+  const q=$('admSearch').value.trim().toLowerCase();
+  const sk=$('admSort').value;
+  const list=admUsers.filter(u=>!q||u.name.toLowerCase().includes(q)||u.phone.includes(q)).sort((a,b)=>sk==='max'?b.max-a.max||b.last-a.last:sk==='created'?b.created-a.created:b.last-a.last);
+  $('admStat').textContent=`Бардыгы: ${admUsers.length} · төлөгөн: ${admUsers.filter(u=>u.paid).length} · күтүп жаткан: ${admUsers.filter(u=>u.pending&&!u.paid).length}`;
+  $('admRows').innerHTML=list.map(u=>`<tr>
+   <td><b>${esc(u.name)}</b></td><td>${esc(u.phone)}</td>
+   <td><b>Сабак ${u.max}</b> / 100<div class="bar"><i style="width:${u.max}%"></i></div><small style="color:var(--mut)">${esc(mk(Math.min(100,u.max)).title)}${u.max>cfg.free&&!u.paid?' · төлөм күтүүдө':''}</small></td>
+   <td>${fd(u.last)}</td><td>${fd(u.created)}</td>
+   <td>${u.paid?'<span class="badge paid">төлөгөн</span>':u.pending?'<span class="badge pend">төлөдүм деди</span>':'<span class="badge">бекер</span>'}</td>
+   <td>${u.devices}</td>
+   <td>${u.paid?`<button data-a="unpay" data-id="${u.id}">Төлөмдү алуу</button>`:`<button class="pri" data-a="pay" data-id="${u.id}">Төлөндү ✓</button>`}
+   <button data-a="pass" data-id="${u.id}">Жаңы пароль</button><button data-a="phone" data-id="${u.id}">Номерди өзгөртүү</button><button data-a="dev" data-id="${u.id}">Түзмөктөрдү бошотуу</button>
+   <button data-a="setmax" data-id="${u.id}">Сабак №</button><button data-a="reset" data-id="${u.id}">Тазалоо</button><button data-a="del" data-id="${u.id}">Өчүрүү</button></td></tr>`).join('')||'<tr><td colspan=8 style="color:var(--mut)">Азырынча эч ким жок</td></tr>';
+}
+$('admRows').onclick=async ev=>{
+  const b=ev.target.closest('button');if(!b)return;const id=b.dataset.id,a=b.dataset.a,u=admUsers.find(x=>x.id===id);
+  try{
+    if(a==='pay')await api('admin/paid',{id,paid:true});
+    else if(a==='unpay'){if(!confirm('Төлөм белгисин алып салабызбы?'))return;await api('admin/paid',{id,paid:false})}
+    else if(a==='reset'){if(!confirm(u.name+' — прогресс 1-сабакка кайтсынбы?'))return;await api('admin/reset',{id})}
+    else if(a==='del'){if(!confirm(u.name+' тренажёрдун тизмесинен өчүрүлсүнбү? (ИМРАН сайтындагы аккаунту жана курстун кабинети калат.)'))return;await api('admin/delete',{id})}
+    else if(a==='pass'){
+      const v=prompt(`${u.name}\nЖаңы сырсөз (кеминде 6 белги). Мурунку сырсөздү көрүүгө болбойт, ал шифрленип сакталат.`,String(Math.floor(100000+Math.random()*900000)));
+      if(!v)return;await api('admin/setpass',{id,password:v});
+      alert(`Даяр! Бул ИМРАН сайтына да, тренажёрго да бирдей сырсөз.\nАты: ${u.name}\nЛогин (номер): ${u.phone}\nЖаңы пароль: ${v}\n\nОкуучуга жеткириңиз. Ал мурунку түзмөктөрдөн чыгып калды.`);
+    }
+    else if(a==='phone'){const v=prompt(`${u.name}: жаңы телефон номери (мис. 0700 123 456)`,u.phone);if(!v)return;await api('admin/setphone',{id,phone:v});alert('Номер өзгөрдү. Эми ушул номер менен кирет.')}
+    else if(a==='dev'){if(!confirm(u.name+': байланган түзмөктөр бошотулсунбу? Ал кайра кирип, жаңы түзмөктөн иштей алат.'))return;await api('admin/devices',{id})}
+    else if(a==='setmax'){const v=prompt('Кайсы сабакка чейин ачык болсун (1–100)?',u.max);if(!v)return;await api('admin/setmax',{id,max:+v})}
+    admLoad();
+  }catch(e){alert(e.message)}
+};
+$('admSearch').oninput=admRender;$('admSort').onchange=admRender;
+$('cfgSave').onclick=async()=>{try{const r=await api('admin/config',{price:$('cfgPrice').value,free:+$('cfgFree').value,devices:+$('cfgDev').value});cfg=r.config;$('cfgOk').textContent='Сакталды ✓';setTimeout(()=>$('cfgOk').textContent='',2000)}catch(e){alert(e.message)}};
+$('adminBtn').onclick=()=>{$('admin').classList.add('show');admLoad()};
+$('admRefresh').onclick=admLoad;$('admClose').onclick=()=>$('admin').classList.remove('show');
+
+/* ---------- старт ---------- */
+(async function boot(){
+  setMode('in');
+  if(TYPING.mode==='demo')$('authSub').textContent='ДЕМО режим: маалымат ушул браузерде гана сакталат. Админ: admin@demo.kg / admin123 · Окуучу: 0700 111 222 / 123456';
+  try{cfg=await TYPING.cfg()}catch(e){}
+  try{
+    if(await API.me()){
+      try{const r=await api('enter');user=r.user;cfg=r.config;token='sb';enter();return}
+      catch(e){try{await API.signOut()}catch(_){}if(e&&e.message&&e.message!=='KICKED')$('authErr').textContent=e.message}
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
